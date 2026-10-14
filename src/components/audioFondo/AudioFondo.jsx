@@ -22,39 +22,20 @@ import { useEffect, useRef, useState } from "react";
 export default function AudioFondo({
   src,
   volumen = 0.4,
-  fade = 1500,
   loop = true,
   mostrarBoton = true,
   posicion = "abajo-derecha",
 }) {
   const audioRef = useRef(null);
-  const fadeRef = useRef(0);
   const [sonando, setSonando] = useState(false);
-
-  // Sube o baja el volumen poco a poco hasta "destino"
-  const fundido = (destino, alTerminar) => {
-    const audio = audioRef.current;
-    if (!audio) return;
-    cancelAnimationFrame(fadeRef.current);
-    const inicio = audio.volume;
-    const t0 = performance.now();
-    const paso = (now) => {
-      const p = fade > 0 ? Math.min((now - t0) / fade, 1) : 1;
-      audio.volume = inicio + (destino - inicio) * p;
-      if (p < 1) fadeRef.current = requestAnimationFrame(paso);
-      else alTerminar?.();
-    };
-    fadeRef.current = requestAnimationFrame(paso);
-  };
 
   const reproducir = async () => {
     const audio = audioRef.current;
     if (!audio) return false;
     try {
-      audio.volume = 0;
+      audio.volume = volumen;
       await audio.play();
       setSonando(true);
-      fundido(volumen);
       return true;
     } catch {
       return false; // el navegador bloqueó la reproducción automática
@@ -63,7 +44,8 @@ export default function AudioFondo({
 
   const pausar = () => {
     setSonando(false);
-    fundido(0, () => audioRef.current?.pause());
+    if (audioRef.current) audioRef.current.volume = 0;
+    audioRef.current?.pause();
   };
 
   // Intento de reproducción automática; si falla, espera la primera interacción
@@ -79,7 +61,6 @@ export default function AudioFondo({
     return () => {
       activo = false;
       eventos.forEach((e) => window.removeEventListener(e, alInteractuar));
-      cancelAnimationFrame(fadeRef.current);
       audioRef.current?.pause();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -87,9 +68,8 @@ export default function AudioFondo({
 
   // Si cambia la prop volumen mientras suena, se ajusta suavemente
   useEffect(() => {
-    if (sonando) fundido(volumen);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [volumen]);
+    if (sonando && audioRef.current) audioRef.current.volume = volumen;
+  }, [volumen, sonando]);
 
   const [v, h] = posicion.split("-");
   const estiloBoton = {
