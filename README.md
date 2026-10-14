@@ -1,8 +1,6 @@
-# PS4 Exploit Host 9.00
+# PS4 Home (vista web)
 
-Interfaz web estilo PS4 (React + Vite + Tailwind) para servir payloads y herramientas
-para firmware 9.00. Incluye pantalla de inicio tipo PS4, envío simulado de payloads,
-toggles de herramientas, información del sistema, guía y créditos.
+Vista del home de PlayStation 4 en el navegador, construida con React + Vite + Tailwind. Incluye fondo animado, música de fondo con control y un menú horizontal de tarjetas estilo consola.
 
 ## Stack
 
@@ -30,7 +28,15 @@ Comandos disponibles:
 - `pnpm preview` — vista previa del build.
 - `pnpm lint` — linting con oxlint.
 
+## Estructura relevante
+
+- `src/components/Fondo/OndasFondo.jsx`: fondo animado (ondas/partículas).
+- `src/components/audioFondo/AudioFondo.jsx`: audio de fondo con fade y botón de mute.
+- `src/components/TarjetasMenu/TarjetasMenu.jsx`: menú horizontal de tarjetas.
+- `src/components/HomeScreen.jsx`: pantalla principal del home.
+- `public/audio/intro-ps4.mp3`: pista de música.
+
 ## Notas
 
-- El envío de payloads es **simulado** (UI); no hay backend.
 - Gestor de paquetes: **pnpm** (`pnpm-lock.yaml`). Se ignoran `package-lock.json` y `yarn.lock`.
+- La música inicia tras la primera interacción del usuario por restricciones del navegador.
