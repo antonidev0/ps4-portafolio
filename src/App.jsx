@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import OndasFondo from './components/fondo/OndasFondo';
+import OndasFondo from './components/Fondo/OndasFondo';
 import TopBar from './components/TopBar';
 import BottomBar from './components/BottomBar';
 import Toast from './components/Toast';
