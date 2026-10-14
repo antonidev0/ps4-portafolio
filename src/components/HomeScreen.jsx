@@ -1,5 +1,6 @@
 ﻿import { useCallback } from 'react';
 import TarjetasMenu from './TarjetasMenu/TarjetasMenu';
+import { menu } from '../data/menu';
 
 const recentGames = [
   { title: "Marvel's Spider-Man 2", genre: 'AcciÃ³n y aventura', accent: 'from-red-700 via-blue-700 to-indigo-900' },
@@ -7,15 +8,6 @@ const recentGames = [
   { title: 'Horizon Forbidden West', genre: 'RPG de acciÃ³n', accent: 'from-emerald-600 via-teal-700 to-cyan-900' },
   { title: 'The Last of Us Part I', genre: 'AcciÃ³n y aventura', accent: 'from-gray-700 via-stone-800 to-black' },
   { title: 'Final Fantasy XVI', genre: 'RPG', accent: 'from-indigo-600 via-purple-800 to-black' },
-];
-
-const tarjetas = [
-  { id: 'games', titulo: 'Juegos', color: 'linear-gradient(160deg, #1b4fc4, #0a2a8a)', icono: <span style={{ fontSize: 42 }}>ðŸŽ®</span>, etiqueta: 'Biblioteca' },
-  { id: 'tv', titulo: 'TV y Video', color: 'linear-gradient(160deg, #c41b1b, #8a0a0a)', icono: <span style={{ fontSize: 42 }}>â–¶ï¸</span>, etiqueta: 'Streaming' },
-  { id: 'library', titulo: 'Biblioteca', color: 'linear-gradient(160deg, #1bc47a, #0a8a4a)', icono: <span style={{ fontSize: 42 }}>ðŸ“š</span>, etiqueta: 'Compras' },
-  { id: 'friends', titulo: 'Amigos', color: 'linear-gradient(160deg, #7a1bc4, #4a0a8a)', icono: <span style={{ fontSize: 42 }}>ðŸ‘¥</span>, etiqueta: 'En lÃ­nea' },
-  { id: 'store', titulo: 'PS Store', color: 'linear-gradient(160deg, #c4a01b, #8a6a0a)', icono: <span style={{ fontSize: 42 }}>ðŸ›’</span>, etiqueta: 'Nuevos' },
-  { id: 'settings', titulo: 'Ajustes', color: 'linear-gradient(160deg, #5a5a5a, #2a2a2a)', icono: <span style={{ fontSize: 42 }}>âš™ï¸</span>, etiqueta: 'Sistema' },
 ];
 
 const mediaApps = [
@@ -90,7 +82,7 @@ export default function HomeScreen({ showToast }) {
         </span>
       </div>
       <TarjetasMenu
-        items={tarjetas}
+        items={menu}
         tamano={170}
         inicial={1}
         onAbrir={(item) => {
