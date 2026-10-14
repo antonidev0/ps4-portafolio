@@ -26,5 +26,4 @@ dist-ssr
 *.sw?
 
 # Carpetas eliminadas / reservadas
-src/data/
 src/components/panels/
