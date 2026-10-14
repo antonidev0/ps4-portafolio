@@ -24,3 +24,7 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Carpetas eliminadas / reservadas
+src/data/
+src/components/panels/
