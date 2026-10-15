@@ -26,6 +26,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *   onCambio    se llama con (item, indice) al cambiar de tarjeta
  *   onAtras     se llama al pulsar Escape o Retroceso
  *   teclado     escuchar las flechas en toda la ventana (por defecto true)
+ *   animarEntrada  al aparecer, las tarjetas empiezan pequeñas y crecen (por defecto true)
  */
 export default function TarjetasMenu({
   items = [],
@@ -36,6 +37,7 @@ export default function TarjetasMenu({
   escala = 1.6,
   inicial = 1,
   teclado = true,
+  animarEntrada = true,
 }) {
   const [indice, setIndice] = useState(
     Math.min(inicial, Math.max(items.length - 1, 0)),
@@ -121,73 +123,76 @@ export default function TarjetasMenu({
     >
       <style>{CSS}</style>
 
-      <div
-        className="tm-fila"
-        style={{
-          gap,
-          transform: `translateX(${desplazamiento}px)`,
-          paddingTop: 12,
-        }}
-      >
-        {items.map((item, i) => {
-          const sel = i === indice;
-          const lado = sel ? grande : tamano;
-          return (
-            <div
-              key={item.id}
-              id={`tarjeta-${item.id}`}
-              role="option"
-              aria-selected={sel}
-              className={`tm-tarjeta${sel ? " tm-sel" : ""}`}
-              style={{ width: lado, flexShrink: 0 }}
-              onClick={() => (sel ? onAbrir?.(item) : mover(i - indice))}
-            >
+      <div className={animarEntrada ? "tm-entrada" : undefined}>
+        <div
+          className="tm-fila"
+          style={{
+            gap,
+            transform: `translateX(${desplazamiento}px)`,
+            paddingTop: 12,
+          }}
+        >
+          {items.map((item, i) => {
+            const sel = i === indice;
+            const lado = sel ? grande : tamano;
+            return (
               <div
-                className="tm-cara"
-                style={{
-                  height: lado,
-                  background: item.imagen
-                    ? `center / cover no-repeat url(${item.imagen})`
-                    : item.color || "linear-gradient(160deg, #1b4fc4, #0a2a8a)",
-                }}
+                key={item.id}
+                id={`tarjeta-${item.id}`}
+                role="option"
+                aria-selected={sel}
+                className={`tm-tarjeta${sel ? " tm-sel" : ""}`}
+                style={{ width: lado, flexShrink: 0 }}
+                onClick={() => (sel ? onAbrir?.(item) : mover(i - indice))}
               >
-                {!item.imagen && item.icono && (
-                  <div
-                    className="tm-icono"
-                    style={{ width: lado * 0.5, height: lado * 0.5 }}
+                <div
+                  className="tm-cara"
+                  style={{
+                    height: lado,
+                    background: item.imagen
+                      ? `center / cover no-repeat url(${item.imagen})`
+                      : item.color ||
+                        "linear-gradient(160deg, #1b4fc4, #0a2a8a)",
+                  }}
+                >
+                  {!item.imagen && item.icono && (
+                    <div
+                      className="tm-icono"
+                      style={{ width: lado * 0.5, height: lado * 0.5 }}
+                    >
+                      {item.icono}
+                    </div>
+                  )}
+                  {!sel && item.etiqueta && (
+                    <span className="tm-etiqueta">{item.etiqueta}</span>
+                  )}
+                </div>
+
+                {/* Franja inferior con flecha, solo en la seleccionada */}
+                <div className="tm-barra" style={{ height: sel ? barra : 0 }}>
+                  <svg
+                    width="22"
+                    height="26"
+                    viewBox="0 0 22 26"
+                    aria-hidden="true"
                   >
-                    {item.icono}
+                    <path d="M11 24 2 14h6V2h6v12h6z" fill="currentColor" />
+                  </svg>
+                </div>
+
+                {/* Título a la derecha de la seleccionada */}
+                {sel && (
+                  <div
+                    className="tm-titulo"
+                    style={{ left: lado + gap * 6, bottom: barra * 0.25 }}
+                  >
+                    {item.titulo}
                   </div>
                 )}
-                {!sel && item.etiqueta && (
-                  <span className="tm-etiqueta">{item.etiqueta}</span>
-                )}
               </div>
-
-              {/* Franja inferior con flecha, solo en la seleccionada */}
-              <div className="tm-barra" style={{ height: sel ? barra : 0 }}>
-                <svg
-                  width="22"
-                  height="26"
-                  viewBox="0 0 22 26"
-                  aria-hidden="true"
-                >
-                  <path d="M11 24 2 14h6V2h6v12h6z" fill="currentColor" />
-                </svg>
-              </div>
-
-              {/* Título a la derecha de la seleccionada */}
-              {sel && (
-                <div
-                  className="tm-titulo"
-                  style={{ left: lado + gap * 6, bottom: barra * 0.25 }}
-                >
-                  {item.titulo}
-                </div>
-              )}
-            </div>
-          );
-        })}
+            );
+          })}
+        </div>
       </div>
     </div>
   );
@@ -255,8 +260,17 @@ const CSS = `
   pointer-events: none;
 }
 @keyframes tm-entra { from { opacity: 0; transform: translateX(-12px); } }
+.tm-entrada {
+  transform-origin: 20% 40%;
+  animation: tm-crece 1s cubic-bezier(.2,.8,.2,1) .15s both;
+}
+@keyframes tm-crece {
+  from { opacity: 0; transform: scale(.72); }
+  60%  { opacity: 1; }
+  to   { opacity: 1; transform: scale(1); }
+}
 @media (prefers-reduced-motion: reduce) {
   .tm-fila, .tm-tarjeta, .tm-cara, .tm-barra { transition: none; }
-  .tm-titulo { animation: none; }
+  .tm-titulo, .tm-entrada { animation: none; }
 }
 `;

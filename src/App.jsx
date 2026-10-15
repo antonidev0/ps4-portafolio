@@ -1,6 +1,8 @@
+import { useState } from "react";
 import OndasFondo from "./components/Fondo/OndasFondo";
 import AudioFondo from "./components/audioFondo/AudioFondo";
 import TarjetasMenu from "./components/TarjetasMenu/TarjetasMenu";
+import PantallaBienvenida from "./components/PantallaBienvenida";
 import useSonidos from "./hooks/useSonidos";
 import { menu } from "./data/menu";
 
@@ -12,6 +14,7 @@ const SONIDOS = {
 };
 
 export default function App() {
+  const [entro, setEntro] = useState(false);
   const sonar = useSonidos(SONIDOS, { volumen: 0.6 });
 
   const abrir = (item) => {
@@ -27,15 +30,30 @@ export default function App() {
   return (
     <>
       <OndasFondo />
-      <AudioFondo src="/audio/intro-ps4.mp3" volumen={0.4} />
-      <main style={{ paddingTop: "12vh" }}>
-        <TarjetasMenu
-          items={menu}
-          onCambio={() => sonar("mover")}
-          onAbrir={abrir}
-          onAtras={atras}
-        />
-      </main>
+
+      {!entro && (
+        <>
+          <AudioFondo src="/audio/intro-ps4.mp3" volumen={0.4} />
+          <PantallaBienvenida
+            marca="ToniDev"
+            titulo="Bienvenido a mi portafolio"
+            subtitulo="Pulsa cualquier tecla para empezar."
+            onPulsar={() => sonar("seleccionar")}
+            onEmpezar={() => setEntro(true)}
+          />
+        </>
+      )}
+
+      {entro && (
+        <main style={{ paddingTop: "12vh" }}>
+          <TarjetasMenu
+            items={menu}
+            onCambio={() => sonar("mover")}
+            onAbrir={abrir}
+            onAtras={atras}
+          />
+        </main>
+      )}
     </>
   );
 }

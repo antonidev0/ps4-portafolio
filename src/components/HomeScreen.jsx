@@ -1,15 +1,7 @@
-﻿import { useCallback } from 'react';
-import TarjetasMenu from './TarjetasMenu/TarjetasMenu';
+﻿import TarjetasMenu from './TarjetasMenu/TarjetasMenu';
 import { menu } from '../data/menu';
 
-export default function HomeScreen({ showToast }) {
-  const openApp = useCallback(
-    (app) => {
-      if (showToast) showToast(app?.label || app?.titulo || 'Abierto');
-    },
-    [showToast],
-  );
- 
+export default function HomeScreen() {
 
   return (
     <div className="flex-1 overflow-y-auto pr-2 animate-fade-up">
