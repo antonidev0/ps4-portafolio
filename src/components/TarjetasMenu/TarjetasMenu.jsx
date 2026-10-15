@@ -7,6 +7,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *
  * Navegación: flechas ← → (o A / D), rueda del ratón, clic o toque.
  * Enter / Espacio o clic sobre la tarjeta ya seleccionada → onAbrir(item).
+ * Escape / Retroceso → onAtras().
  *
  * Uso:
  *   <TarjetasMenu items={items} onAbrir={(item) => console.log(item)} />
@@ -23,18 +24,22 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *   escala      cuánto crece la seleccionada (por defecto 1.6)
  *   inicial     índice seleccionado al inicio (por defecto 1)
  *   onCambio    se llama con (item, indice) al cambiar de tarjeta
+ *   onAtras     se llama al pulsar Escape o Retroceso
  *   teclado     escuchar las flechas en toda la ventana (por defecto true)
  */
 export default function TarjetasMenu({
   items = [],
   onAbrir,
   onCambio,
+  onAtras,
   tamano = 180,
   escala = 1.6,
   inicial = 1,
   teclado = true,
 }) {
-  const [indice, setIndice] = useState(Math.min(inicial, Math.max(items.length - 1, 0)));
+  const [indice, setIndice] = useState(
+    Math.min(inicial, Math.max(items.length - 1, 0)),
+  );
   const ruedaRef = useRef(0);
 
   const gap = Math.round(tamano * 0.03);
@@ -45,26 +50,35 @@ export default function TarjetasMenu({
 
   const mover = useCallback(
     (paso) => {
-      setIndice((i) => {
-        const n = Math.max(0, Math.min(items.length - 1, i + paso));
-        if (n !== i) onCambio?.(items[n], n);
-        return n;
-      });
+      const n = Math.max(0, Math.min(items.length - 1, indice + paso));
+      if (n === indice) return; // ya está en el borde: no se mueve ni suena
+      setIndice(n);
+      onCambio?.(items[n], n);
     },
-    [items, onCambio]
+    [items, indice, onCambio],
   );
 
   // Teclado
   useEffect(() => {
     if (!teclado) return;
     const alPulsar = (e) => {
-      if (["ArrowRight", "d", "D"].includes(e.key)) { e.preventDefault(); mover(1); }
-      else if (["ArrowLeft", "a", "A"].includes(e.key)) { e.preventDefault(); mover(-1); }
-      else if (e.key === "Enter" || e.key === " ") { e.preventDefault(); items[indice] && onAbrir?.(items[indice]); }
+      if (["ArrowRight", "d", "D"].includes(e.key)) {
+        e.preventDefault();
+        mover(1);
+      } else if (["ArrowLeft", "a", "A"].includes(e.key)) {
+        e.preventDefault();
+        mover(-1);
+      } else if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        items[indice] && onAbrir?.(items[indice]);
+      } else if (e.key === "Escape" || e.key === "Backspace") {
+        e.preventDefault();
+        onAtras?.();
+      }
     };
     window.addEventListener("keydown", alPulsar);
     return () => window.removeEventListener("keydown", alPulsar);
-  }, [teclado, mover, indice, items, onAbrir]);
+  }, [teclado, mover, indice, items, onAbrir, onAtras]);
 
   // Rueda del ratón (con pausa para que no salte de golpe)
   const alRueda = (e) => {
@@ -94,7 +108,13 @@ export default function TarjetasMenu({
       onWheel={alRueda}
       onTouchStart={alTocar}
       onTouchEnd={alSoltar}
-      style={{ position: "relative", width: "100%", overflow: "hidden", height: grande + barra + 40, userSelect: "none" }}
+      style={{
+        position: "relative",
+        width: "100%",
+        overflow: "hidden",
+        height: grande + barra + 40,
+        userSelect: "none",
+      }}
       role="listbox"
       aria-label="Menú de aplicaciones"
       aria-activedescendant={actual ? `tarjeta-${actual.id}` : undefined}
@@ -103,7 +123,11 @@ export default function TarjetasMenu({
 
       <div
         className="tm-fila"
-        style={{ gap, transform: `translateX(${desplazamiento}px)`, paddingTop: 12 }}
+        style={{
+          gap,
+          transform: `translateX(${desplazamiento}px)`,
+          paddingTop: 12,
+        }}
       >
         {items.map((item, i) => {
           const sel = i === indice;
@@ -128,23 +152,36 @@ export default function TarjetasMenu({
                 }}
               >
                 {!item.imagen && item.icono && (
-                  <div className="tm-icono" style={{ width: lado * 0.5, height: lado * 0.5 }}>
+                  <div
+                    className="tm-icono"
+                    style={{ width: lado * 0.5, height: lado * 0.5 }}
+                  >
                     {item.icono}
                   </div>
                 )}
-                {!sel && item.etiqueta && <span className="tm-etiqueta">{item.etiqueta}</span>}
+                {!sel && item.etiqueta && (
+                  <span className="tm-etiqueta">{item.etiqueta}</span>
+                )}
               </div>
 
               {/* Franja inferior con flecha, solo en la seleccionada */}
               <div className="tm-barra" style={{ height: sel ? barra : 0 }}>
-                <svg width="22" height="26" viewBox="0 0 22 26" aria-hidden="true">
+                <svg
+                  width="22"
+                  height="26"
+                  viewBox="0 0 22 26"
+                  aria-hidden="true"
+                >
                   <path d="M11 24 2 14h6V2h6v12h6z" fill="currentColor" />
                 </svg>
               </div>
 
               {/* Título a la derecha de la seleccionada */}
               {sel && (
-                <div className="tm-titulo" style={{ left: lado + gap * 6, bottom: barra * 0.25 }}>
+                <div
+                  className="tm-titulo"
+                  style={{ left: lado + gap * 6, bottom: barra * 0.25 }}
+                >
                   {item.titulo}
                 </div>
               )}
