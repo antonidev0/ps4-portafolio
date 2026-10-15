@@ -52,6 +52,8 @@ export default function AudioFondo({
   useEffect(() => {
     let activo = true;
     const eventos = ["pointerdown", "keydown", "touchstart"];
+    // Precarga el archivo mientras se espera la primera interacción
+    audioRef.current?.load();
     const alInteractuar = async () => {
       if (await reproducir()) eventos.forEach((e) => window.removeEventListener(e, alInteractuar));
     };

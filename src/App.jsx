@@ -38,6 +38,7 @@ export default function App() {
             marca="ToniDev"
             titulo="Bienvenido a mi portafolio"
             subtitulo="Pulsa cualquier tecla para empezar."
+            duracion={1500}
             onPulsar={() => sonar("seleccionar")}
             onEmpezar={() => setEntro(true)}
           />
