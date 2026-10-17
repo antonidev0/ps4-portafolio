@@ -5,6 +5,10 @@ import { SEO } from "./seo";
 export const TEXTOS = {
   es: {
     tituloPagina: SEO.es.titulo,
+    sonido: "Sonido",
+    sonidoActivado: "Activado",
+    sonidoDesactivado: "Desactivado",
+    botonSonido: "Música y sonidos",
     bienvenidaTitulo: "Bienvenido a mi portafolio",
     bienvenidaSubtitulo: "Pulsa cualquier tecla o toca la pantalla para empezar.",
     menu: "Menú del portafolio",
@@ -23,6 +27,10 @@ export const TEXTOS = {
   },
   en: {
     tituloPagina: SEO.en.titulo,
+    sonido: "Sound",
+    sonidoActivado: "On",
+    sonidoDesactivado: "Off",
+    botonSonido: "Music and sounds",
     bienvenidaTitulo: "Welcome to my portfolio",
     bienvenidaSubtitulo: "Press any key or tap the screen to start.",
     menu: "Portfolio menu",
@@ -41,6 +49,10 @@ export const TEXTOS = {
   },
   it: {
     tituloPagina: SEO.it.titulo,
+    sonido: "Audio",
+    sonidoActivado: "Attivo",
+    sonidoDesactivado: "Disattivato",
+    botonSonido: "Musica e suoni",
     bienvenidaTitulo: "Benvenuto nel mio portfolio",
     bienvenidaSubtitulo: "Premi un tasto qualsiasi o tocca lo schermo per iniziare.",
     menu: "Menu del portfolio",

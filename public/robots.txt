@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://ps4-portafolio.vercel.app/sitemap.xml

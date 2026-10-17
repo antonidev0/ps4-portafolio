@@ -2,11 +2,20 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { routes } from "./routes";
+import { detenerMusica, efecto, iniciarMusica } from "./audio/sonidos";
 import { useAppStore } from "./store/useAppStore";
 
 // jsdom no tiene WebGL: en los tests el juego se sustituye por un botón de salida
 vi.mock("./apps/dachshund-3d/components/DachshundGame", () => ({
   default: ({ onExit, exitLabel }) => <button onClick={onExit}>{exitLabel}</button>,
+}));
+
+// Los sonidos se espían para comprobar cuándo suenan
+vi.mock("./audio/sonidos", () => ({
+  iniciarMusica: vi.fn(),
+  detenerMusica: vi.fn(),
+  efecto: vi.fn(),
+  precargarEfectos: vi.fn(),
 }));
 
 const abrir = (ruta) => {
@@ -129,6 +138,39 @@ describe("navegación", () => {
     await screen.findByRole("dialog", { name: "Bienvenido a mi portafolio" });
     expect(robot.state.location.pathname).toBe("/");
     agente.mockRestore();
+  });
+
+  it("la música suena solo en la bienvenida y se apaga al entrar", async () => {
+    const router = abrir("/");
+    await screen.findByRole("dialog", { name: "Bienvenido a mi portafolio" });
+    expect(iniciarMusica).toHaveBeenCalled();
+    vi.useFakeTimers();
+
+    fireEvent.keyDown(window, { key: "Enter" });
+    expect(efecto).toHaveBeenCalledWith("seleccionar");
+    expect(detenerMusica).toHaveBeenCalled();
+    act(() => vi.advanceTimersByTime(1000));
+    expect(router.state.location.pathname).toBe("/menu");
+
+    vi.useRealTimers();
+    fireEvent.keyDown(window, { key: "ArrowRight" });
+    expect(efecto).toHaveBeenCalledWith("mover");
+  });
+
+  it("el botón de sonido silencia sin salir de la bienvenida", async () => {
+    const router = abrir("/");
+    const boton = await screen.findByRole("button", { name: "Música y sonidos" });
+    fireEvent.pointerDown(boton);
+    fireEvent.click(boton);
+    expect(useAppStore.getState().sonido).toBe(false);
+    expect(boton).toHaveAttribute("aria-pressed", "false");
+    expect(router.state.location.pathname).toBe("/");
+  });
+
+  it("desactiva el sonido desde Ajustes", async () => {
+    abrir("/ajustes");
+    fireEvent.click(await screen.findByLabelText("Desactivado"));
+    expect(useAppStore.getState().sonido).toBe(false);
   });
 
   it("cambia el tema desde Ajustes", async () => {

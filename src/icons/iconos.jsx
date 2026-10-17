@@ -78,3 +78,17 @@ export const IconoAtras = (p) => (
     <path d="M15 5l-7 7 7 7" />
   </Base>
 );
+
+export const IconoSonido = (p) => (
+  <Base {...p}>
+    <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
+    <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />
+  </Base>
+);
+
+export const IconoSilencio = (p) => (
+  <Base {...p}>
+    <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4z" />
+    <path d="M16 9.5l5 5M21 9.5l-5 5" />
+  </Base>
+);

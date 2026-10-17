@@ -119,6 +119,8 @@ function Ajustes() {
   const { idioma, t } = useIdioma();
   const tema = useAppStore((s) => s.tema);
   const setTema = useAppStore((s) => s.setTema);
+  const sonido = useAppStore((s) => s.sonido);
+  const setSonido = useAppStore((s) => s.setSonido);
   const cambiarIdioma = useCambiarIdioma();
 
   return (
@@ -137,6 +139,27 @@ function Ajustes() {
                 className="sr-only"
               />
               {nombre}
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend className="mb-3 text-lg font-semibold">{t("sonido")}</legend>
+        <div className="flex flex-wrap gap-3">
+          {[
+            [true, t("sonidoActivado")],
+            [false, t("sonidoDesactivado")],
+          ].map(([valor, texto]) => (
+            <label key={texto} className={claseOpcion(sonido === valor)}>
+              <input
+                type="radio"
+                name="sonido"
+                checked={sonido === valor}
+                onChange={() => setSonido(valor)}
+                className="sr-only"
+              />
+              {texto}
             </label>
           ))}
         </div>

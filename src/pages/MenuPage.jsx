@@ -1,4 +1,6 @@
+import { useEffect } from "react";
 import { useNavigate } from "react-router";
+import { efecto, precargarEfectos } from "../audio/sonidos";
 import SelectorIdioma from "../components/SelectorIdioma";
 import TarjetasMenu from "../components/TarjetasMenu/TarjetasMenu";
 import { secciones } from "../data/secciones";
@@ -10,6 +12,7 @@ export default function MenuPage() {
   const { t, tr, ruta } = useIdioma();
   const indiceMenu = useAppStore((s) => s.indiceMenu);
   const setIndiceMenu = useAppStore((s) => s.setIndiceMenu);
+  useEffect(precargarEfectos, []);
   const items = secciones.map((s) => ({ ...s, titulo: tr(s.titulo), etiqueta: tr(s.etiqueta) }));
 
   return (
@@ -20,8 +23,14 @@ export default function MenuPage() {
         items={items}
         ariaLabel={t("menu")}
         inicial={indiceMenu}
-        onCambio={(_, i) => setIndiceMenu(i)}
-        onAbrir={(item) => navigate(ruta(item.ruta ?? `/${item.id}`))}
+        onCambio={(_, i) => {
+          efecto("mover");
+          setIndiceMenu(i);
+        }}
+        onAbrir={(item) => {
+          efecto("seleccionar");
+          navigate(ruta(item.ruta ?? `/${item.id}`));
+        }}
         onAtras={() => navigate(ruta("/"))}
       />
       <p className="mt-4 hidden px-10 text-sm text-white/50 sm:block">{t("ayudaMenu")}</p>
