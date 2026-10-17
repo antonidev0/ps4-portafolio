@@ -7,9 +7,17 @@ describe("useAppStore", () => {
   it("cambia el tema y lo guarda en localStorage", () => {
     useAppStore.getState().setTema("violeta");
     expect(useAppStore.getState().tema).toBe("violeta");
-    expect(JSON.parse(localStorage.getItem("portafolio-tonidev")).state).toEqual({
+    expect(JSON.parse(localStorage.getItem("portafolio-tonidev")).state).toMatchObject({
       tema: "violeta",
     });
+  });
+
+  it("cambia el idioma, lo guarda e ignora idiomas que no existen", () => {
+    useAppStore.getState().setIdioma("it");
+    expect(useAppStore.getState().idioma).toBe("it");
+    expect(JSON.parse(localStorage.getItem("portafolio-tonidev")).state.idioma).toBe("it");
+    useAppStore.getState().setIdioma("fr");
+    expect(useAppStore.getState().idioma).toBe("it");
   });
 
   it("ignora temas que no existen", () => {

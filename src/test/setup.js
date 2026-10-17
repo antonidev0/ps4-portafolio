@@ -1,9 +1,13 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup } from "@testing-library/react";
-import { afterEach, vi } from "vitest";
+import { afterEach, beforeEach, vi } from "vitest";
+import { useAppStore } from "../store/useAppStore";
 
 // jsdom no implementa canvas ni ResizeObserver: el fondo animado no se dibuja en los tests
 HTMLCanvasElement.prototype.getContext = vi.fn(() => null);
+
+// Los tests se escriben en español, sea cual sea el idioma del navegador de jsdom
+beforeEach(() => useAppStore.setState({ idioma: "es" }));
 
 afterEach(() => {
   cleanup();

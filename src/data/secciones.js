@@ -1,6 +1,10 @@
 // Secciones del portafolio. Cada una es una tarjeta del menú y una página en /<id>.
 // Para añadir, quitar o reordenar secciones, edita solo este archivo.
 //
+// Los textos se escriben en los tres idiomas: { es: "…", en: "…", it: "…" }.
+// Si un texto es igual en todos (un nombre, una URL, "GitHub"), basta con un texto simple.
+// Si falta una traducción, se muestra el español.
+//
 // Campos:
 //   id           identificador único; también es la ruta (/sobre-mi, /proyectos…)
 //   titulo       texto grande que aparece al seleccionar la tarjeta y en la página
@@ -23,45 +27,81 @@ import {
   IconoProyectos,
 } from "../icons/iconos";
 
+const VER_CODIGO = { es: "Ver código", en: "View code", it: "Vedi il codice" };
+
 export const secciones = [
   {
     id: "sobre-mi",
-    titulo: "Sobre mí",
+    titulo: { es: "Sobre mí", en: "About me", it: "Chi sono" },
     Icono: IconoPersona,
     color: "linear-gradient(160deg, #1d5be0, #06257a)",
-    descripcion:
-      "Soy Antoni, desarrollador frontend en React y JavaScript. Me encanta crear experiencias interactivas que se sienten vivas, desde juegos en 3D hasta interfaces inspiradas en consolas como este portafolio. Disfruto los proyectos donde el diseño, la animación y el código se juntan para sorprender.",
+    descripcion: {
+      es: "Soy Antoni, desarrollador frontend en React y JavaScript. Me encanta crear experiencias interactivas que se sienten vivas, desde juegos en 3D hasta interfaces inspiradas en consolas como este portafolio. Disfruto los proyectos donde el diseño, la animación y el código se juntan para sorprender.",
+      en: "I'm Antoni, a frontend developer working with React and JavaScript. I love building interactive experiences that feel alive, from 3D games to console-inspired interfaces like this portfolio. I enjoy projects where design, animation and code come together to surprise people.",
+      it: "Sono Antoni, sviluppatore frontend con React e JavaScript. Amo creare esperienze interattive che sembrano vive, dai giochi in 3D alle interfacce ispirate alle console come questo portfolio. Mi piacciono i progetti in cui design, animazione e codice si uniscono per sorprendere.",
+    },
     items: [
-      { titulo: "Ubicación", texto: "Italia · Originario de Venezuela" },
-      { titulo: "Intereses", texto: "Desarrollo web, videojuegos y redes sociales" },
+      {
+        titulo: { es: "Ubicación", en: "Location", it: "Dove mi trovo" },
+        texto: {
+          es: "Italia · Originario de Venezuela",
+          en: "Italy · Originally from Venezuela",
+          it: "Italia · Originario del Venezuela",
+        },
+      },
+      {
+        titulo: { es: "Intereses", en: "Interests", it: "Interessi" },
+        texto: {
+          es: "Desarrollo web, videojuegos y redes sociales",
+          en: "Web development, video games and social media",
+          it: "Sviluppo web, videogiochi e social network",
+        },
+      },
     ],
   },
   {
     id: "proyectos",
-    titulo: "Proyectos",
+    titulo: { es: "Proyectos", en: "Projects", it: "Progetti" },
     Icono: IconoProyectos,
-    descripcion: "Una selección de cosas que he construido.",
+    descripcion: {
+      es: "Una selección de cosas que he construido.",
+      en: "A selection of things I've built.",
+      it: "Una selezione di cose che ho realizzato.",
+    },
     items: [
       {
-        titulo: "Portafolio estilo PS4",
-        texto:
-          "Este mismo sitio: un menú de tarjetas navegable con teclado, ratón y gestos táctiles.",
+        titulo: {
+          es: "Portafolio estilo PS4",
+          en: "PS4-style portfolio",
+          it: "Portfolio in stile PS4",
+        },
+        texto: {
+          es: "Este mismo sitio: un menú de tarjetas navegable con teclado, ratón y gestos táctiles.",
+          en: "This very site: a card menu you can browse with the keyboard, mouse or touch gestures.",
+          it: "Questo stesso sito: un menu a schede navigabile con tastiera, mouse e gesti touch.",
+        },
         etiquetas: ["React", "Vite", "Tailwind CSS", "React Router", "Zustand"],
-        enlace: { texto: "Ver código", url: "https://github.com/antonidev0/ps4-portafolio" },
+        enlace: { texto: VER_CODIGO, url: "https://github.com/antonidev0/ps4-portafolio" },
       },
       {
         titulo: "Dachshund 3D",
-        texto:
-          "Un Snake en 3D protagonizado por un perro salchicha, con tres niveles y modo infinito. Se juega desde su tarjeta en el menú.",
+        texto: {
+          es: "Un Snake en 3D protagonizado por un perro salchicha, con tres niveles y modo infinito. Se juega desde su tarjeta en el menú.",
+          en: "A 3D Snake game starring a dachshund, with three levels and an endless mode. You can play it from its card in the menu.",
+          it: "Uno Snake in 3D con protagonista un bassotto, con tre livelli e una modalità infinita. Si gioca dalla sua scheda nel menu.",
+        },
         etiquetas: ["React", "Three.js", "Web Audio API", "Vitest"],
-        enlace: { texto: "Ver código", url: "https://github.com/antonidev0/dachshund-3d" },
+        enlace: { texto: VER_CODIGO, url: "https://github.com/antonidev0/dachshund-3d" },
       },
       {
         titulo: "Flappy Dog",
-        texto:
-          "Mi versión de Flappy Bird protagonizada por un perro, hecha para practicar lógica de juego en el navegador.",
+        texto: {
+          es: "Mi versión de Flappy Bird protagonizada por un perro, hecha para practicar lógica de juego en el navegador.",
+          en: "My take on Flappy Bird starring a dog, built to practice game logic in the browser.",
+          it: "La mia versione di Flappy Bird con protagonista un cane, creata per esercitarmi con la logica di gioco nel browser.",
+        },
         etiquetas: ["JavaScript"],
-        enlace: { texto: "Ver código", url: "https://github.com/antonidev0/flappydog" },
+        enlace: { texto: VER_CODIGO, url: "https://github.com/antonidev0/flappydog" },
       },
     ],
   },
@@ -74,52 +114,78 @@ export const secciones = [
   },
   {
     id: "habilidades",
-    titulo: "Habilidades",
+    titulo: { es: "Habilidades", en: "Skills", it: "Competenze" },
     Icono: IconoCodigo,
-    descripcion: "Tecnologías y herramientas con las que trabajo.",
+    descripcion: {
+      es: "Tecnologías y herramientas con las que trabajo.",
+      en: "Technologies and tools I work with.",
+      it: "Tecnologie e strumenti con cui lavoro.",
+    },
     items: [
       {
         titulo: "Frontend",
         etiquetas: ["JavaScript", "React", "Tailwind CSS", "HTML", "CSS", "Three.js"],
       },
-      { titulo: "Herramientas", etiquetas: ["Git", "GitHub", "Vite", "pnpm", "CI/CD"] },
+      {
+        titulo: { es: "Herramientas", en: "Tools", it: "Strumenti" },
+        etiquetas: ["Git", "GitHub", "Vite", "pnpm", "CI/CD"],
+      },
     ],
   },
   {
     id: "experiencia",
-    titulo: "Experiencia",
+    titulo: { es: "Experiencia", en: "Experience", it: "Esperienza" },
     Icono: IconoMaletin,
-    descripcion: "Formación y proyectos que me han hecho crecer como desarrollador.",
+    descripcion: {
+      es: "Formación y proyectos que me han hecho crecer como desarrollador.",
+      en: "Training and projects that have helped me grow as a developer.",
+      it: "Formazione e progetti che mi hanno fatto crescere come sviluppatore.",
+    },
     items: [
       {
         titulo: "Bootcamp JSCamp",
-        texto: "Formación intensiva en JavaScript y desarrollo web moderno.",
-        enlace: { texto: "Ver repositorio", url: "https://github.com/antonidev0/jscamp-bootcamp" },
+        texto: {
+          es: "Formación intensiva en JavaScript y desarrollo web moderno.",
+          en: "Intensive training in JavaScript and modern web development.",
+          it: "Formazione intensiva in JavaScript e sviluppo web moderno.",
+        },
+        enlace: {
+          texto: { es: "Ver repositorio", en: "View repository", it: "Vedi il repository" },
+          url: "https://github.com/antonidev0/jscamp-bootcamp",
+        },
       },
     ],
   },
   {
     id: "contacto",
-    titulo: "Contacto",
+    titulo: { es: "Contacto", en: "Contact", it: "Contatti" },
     Icono: IconoCorreo,
-    descripcion: "¿Hablamos? Puedes encontrarme aquí:",
+    descripcion: {
+      es: "¿Hablamos? Puedes encontrarme aquí:",
+      en: "Let's talk! You can find me here:",
+      it: "Parliamone! Puoi trovarmi qui:",
+    },
     items: [
       {
         titulo: "GitHub",
         enlace: { texto: "github.com/antonidev0", url: "https://github.com/antonidev0" },
       },
       {
-        titulo: "Correo",
+        titulo: { es: "Correo", en: "Email", it: "Email" },
         enlace: { texto: "antonibogado43@gmail.com", url: "mailto:antonibogado43@gmail.com" },
       },
     ],
   },
   {
     id: "ajustes",
-    titulo: "Ajustes",
+    titulo: { es: "Ajustes", en: "Settings", it: "Impostazioni" },
     Icono: IconoAjustes,
     tipo: "ajustes",
-    descripcion: "Personaliza el aspecto del portafolio. Se guarda en este navegador.",
+    descripcion: {
+      es: "Personaliza el portafolio. Se guarda en este navegador.",
+      en: "Customize the portfolio. Your choices are saved in this browser.",
+      it: "Personalizza il portfolio. Le scelte vengono salvate in questo browser.",
+    },
   },
 ];
 

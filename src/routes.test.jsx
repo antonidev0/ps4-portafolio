@@ -61,6 +61,27 @@ describe("navegación", () => {
     );
   });
 
+  it("cambia de idioma desde el selector sin salir de la bienvenida", () => {
+    vi.useFakeTimers();
+    const router = abrir("/");
+    fireEvent.pointerDown(screen.getByRole("button", { name: "English" }));
+    fireEvent.click(screen.getByRole("button", { name: "English" }));
+    act(() => vi.advanceTimersByTime(2000));
+
+    expect(router.state.location.pathname).toBe("/");
+    expect(screen.getByRole("dialog", { name: "Welcome to my portfolio" })).toBeInTheDocument();
+    expect(document.documentElement.lang).toBe("en");
+    expect(document.title).toBe("ToniDev Portfolio | React Frontend Developer");
+  });
+
+  it("muestra las secciones en el idioma elegido en Ajustes", async () => {
+    abrir("/ajustes");
+    fireEvent.click(await screen.findByLabelText("Italiano"));
+    expect(await screen.findByRole("heading", { name: "Impostazioni" })).toBeInTheDocument();
+    expect(screen.getByText("Colore dello sfondo")).toBeInTheDocument();
+    expect(screen.getByRole("link", { name: /Torna al menu/ })).toBeInTheDocument();
+  });
+
   it("cambia el tema desde Ajustes", async () => {
     abrir("/ajustes");
     fireEvent.click(await screen.findByLabelText("Violeta"));

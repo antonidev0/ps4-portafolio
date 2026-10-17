@@ -31,6 +31,7 @@ const FONDO_TARJETA = "linear-gradient(160deg, #1b4fc4, #0a2a8a)";
  *   onAtras     se llama al pulsar Escape o Retroceso
  *   teclado     escuchar las teclas en toda la ventana (por defecto true)
  *   animarEntrada  al aparecer, las tarjetas empiezan pequeñas y crecen (por defecto true)
+ *   ariaLabel   nombre accesible de la lista (por defecto "Menú del portafolio")
  */
 export default function TarjetasMenu({
   items = [],
@@ -42,6 +43,7 @@ export default function TarjetasMenu({
   inicial = 0,
   teclado = true,
   animarEntrada = true,
+  ariaLabel = "Menú del portafolio",
 }) {
   const [indiceGuardado, setIndice] = useState(inicial);
   const indice = Math.max(0, Math.min(indiceGuardado, items.length - 1));
@@ -71,6 +73,9 @@ export default function TarjetasMenu({
 
   const alPulsar = useEffectEvent((e) => {
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    // Enter y Espacio sobre el selector de idioma pulsan el botón, no abren la tarjeta
+    const enSelector = e.target.closest?.("[data-sin-atajos]");
+    if (enSelector && (e.key === "Enter" || e.key === " ")) return;
     if (["ArrowRight", "d", "D"].includes(e.key)) {
       e.preventDefault();
       mover(1);
@@ -142,7 +147,7 @@ export default function TarjetasMenu({
       className="relative w-full select-none overflow-hidden outline-none"
       style={{ height: altoFila + (compacto ? 90 : 28) }}
       role="listbox"
-      aria-label="Menú del portafolio"
+      aria-label={ariaLabel}
       aria-orientation="horizontal"
       aria-activedescendant={actual ? `tarjeta-${actual.id}` : undefined}
     >

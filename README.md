@@ -7,7 +7,7 @@ Portafolio personal con la estética del menú de inicio de una consola: pantall
 - React 19
 - Vite 8
 - React Router 8 (rutas)
-- Zustand 5 (estado global, con el tema guardado en `localStorage`)
+- Zustand 5 (estado global, con el tema y el idioma guardados en `localStorage`)
 - Tailwind CSS 3
 - Three.js (solo en el juego Dachshund 3D, cargado bajo demanda)
 - Oxlint, Prettier y Vitest con Testing Library
@@ -33,6 +33,15 @@ Comandos disponibles:
 - `pnpm format` / `pnpm format:check`: formatear o comprobar el formato con Prettier.
 - `pnpm test`: tests con Vitest.
 
+## Idiomas
+
+El portafolio está en español, inglés e italiano. La primera vez se elige según el idioma del navegador (español si no coincide ninguno), y después se puede cambiar con los botones ES · EN · IT de la bienvenida y el menú, o desde Ajustes. La elección se guarda en el navegador.
+
+- Textos de la interfaz: `src/i18n/textos.js`.
+- Textos de las secciones: `src/data/secciones.js`, escritos como `{ es: "…", en: "…", it: "…" }`.
+- Para añadir otro idioma: añádelo en `src/i18n/idiomas.js` y sus textos en los dos archivos anteriores. Lo que no esté traducido se muestra en español.
+- El juego Dachshund 3D solo está en español.
+
 ## Rutas
 
 | Ruta                   | Página                                 |
@@ -50,7 +59,8 @@ src/
   main.jsx                   arranque y router
   routes.jsx                 definición de rutas
   data/secciones.js          contenido del portafolio (edita aquí tus textos)
-  store/useAppStore.js       estado global (tema del fondo y tarjeta seleccionada)
+  store/useAppStore.js       estado global (tema, idioma y tarjeta seleccionada)
+  i18n/                      idiomas disponibles, textos de la interfaz y hook useIdioma
   pages/                     una página por ruta
   components/
     Layout.jsx               fondo común + página actual

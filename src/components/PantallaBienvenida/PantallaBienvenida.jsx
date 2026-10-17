@@ -31,6 +31,9 @@ export default function PantallaBienvenida({
 
   const empezar = useEffectEvent((e) => {
     if (usadoRef.current) return;
+    // Clics, Enter y Espacio sobre el selector de idioma no cuentan; el resto de teclas sí
+    const enSelector = e.target.closest?.("[data-sin-atajos]");
+    if (enSelector && (e.type !== "keydown" || e.key === "Enter" || e.key === " ")) return;
     if (e.type === "keydown" && MODIFICADORES.includes(e.key)) return;
     if (e.type === "keydown" && (e.ctrlKey || e.metaKey || e.altKey)) return; // no bloquear Ctrl+R, etc.
     usadoRef.current = true;
