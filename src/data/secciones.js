@@ -58,7 +58,8 @@ export const secciones = [
       },
       {
         titulo: "Flappy Dog",
-        texto: "Mi versión de Flappy Bird protagonizada por un perro, hecha para practicar lógica de juego en el navegador.",
+        texto:
+          "Mi versión de Flappy Bird protagonizada por un perro, hecha para practicar lógica de juego en el navegador.",
         etiquetas: ["JavaScript"],
         enlace: { texto: "Ver código", url: "https://github.com/antonidev0/flappydog" },
       },
@@ -77,7 +78,10 @@ export const secciones = [
     Icono: IconoCodigo,
     descripcion: "Tecnologías y herramientas con las que trabajo.",
     items: [
-      { titulo: "Frontend", etiquetas: ["JavaScript", "React", "Tailwind CSS", "HTML", "CSS", "Three.js"] },
+      {
+        titulo: "Frontend",
+        etiquetas: ["JavaScript", "React", "Tailwind CSS", "HTML", "CSS", "Three.js"],
+      },
       { titulo: "Herramientas", etiquetas: ["Git", "GitHub", "Vite", "pnpm", "CI/CD"] },
     ],
   },
