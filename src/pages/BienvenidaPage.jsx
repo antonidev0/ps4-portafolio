@@ -7,7 +7,7 @@ export default function BienvenidaPage() {
   return (
     <PantallaBienvenida
       marca="ToniDev"
-      titulo="Benvenuto Toroo"
+      titulo="Bienvenido a mi portafolio"
       subtitulo="Pulsa cualquier tecla o toca la pantalla para empezar."
       onEmpezar={() => navigate("/menu")}
     />
