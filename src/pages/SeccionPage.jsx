@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Link, useNavigate, useParams } from "react-router";
+import { efecto } from "../audio/sonidos";
 import { TEMAS } from "../components/Fondo/temas";
 import { buscarSeccion } from "../data/secciones";
 import { IDIOMAS } from "../i18n/idiomas";
@@ -20,6 +21,7 @@ export default function SeccionPage() {
       if (e.key !== "Escape" && e.key !== "Backspace") return;
       if (e.target.closest?.("input, textarea, [contenteditable]")) return;
       e.preventDefault();
+      efecto("retroceder");
       navigate(ruta("/menu"));
     };
     window.addEventListener("keydown", alPulsar);
@@ -34,6 +36,7 @@ export default function SeccionPage() {
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col px-4 py-[8vh] sm:px-8">
       <Link
         to={ruta("/menu")}
+        data-sonido="retroceder"
         className="mb-6 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
       >
         <IconoAtras width={16} height={16} />
@@ -103,6 +106,7 @@ function Enlaces({ enlaces }) {
           <a
             key={url}
             href={url}
+            data-sonido="click"
             target={abreFuera(url) ? "_blank" : undefined}
             rel="noreferrer"
             className="text-sky-300 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
@@ -132,6 +136,7 @@ function Ajustes() {
             <label key={codigo} lang={codigo} className={claseOpcion(idioma === codigo)}>
               <input
                 type="radio"
+                data-sonido="click"
                 name="idioma"
                 value={codigo}
                 checked={idioma === codigo}
@@ -154,6 +159,7 @@ function Ajustes() {
             <label key={texto} className={claseOpcion(sonido === valor)}>
               <input
                 type="radio"
+                data-sonido="click"
                 name="sonido"
                 checked={sonido === valor}
                 onChange={() => setSonido(valor)}
@@ -172,6 +178,7 @@ function Ajustes() {
             <label key={id} className={claseOpcion(tema === id)}>
               <input
                 type="radio"
+                data-sonido="click"
                 name="tema"
                 value={id}
                 checked={tema === id}

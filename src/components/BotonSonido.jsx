@@ -4,6 +4,7 @@ import { useAppStore } from "../store/useAppStore";
 
 /**
  * Botón para activar o silenciar la música y los efectos.
+ * Suena al activarlo (al silenciar ya no suena nada).
  * Lleva data-sin-atajos para que la bienvenida no se cierre al pulsarlo.
  */
 export default function BotonSonido({ className = "" }) {
@@ -15,6 +16,7 @@ export default function BotonSonido({ className = "" }) {
   return (
     <button
       type="button"
+      data-sonido="click"
       data-sin-atajos
       aria-label={t("botonSonido")}
       title={t("botonSonido")}

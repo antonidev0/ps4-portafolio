@@ -28,10 +28,13 @@ export default function MenuPage() {
           setIndiceMenu(i);
         }}
         onAbrir={(item) => {
-          efecto("seleccionar");
+          efecto("click");
           navigate(ruta(item.ruta ?? `/${item.id}`));
         }}
-        onAtras={() => navigate(ruta("/"))}
+        onAtras={() => {
+          efecto("retroceder");
+          navigate(ruta("/"));
+        }}
       />
       <p className="mt-4 hidden px-10 text-sm text-white/50 sm:block">{t("ayudaMenu")}</p>
     </main>

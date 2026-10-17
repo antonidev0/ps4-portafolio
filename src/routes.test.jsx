@@ -2,7 +2,13 @@ import { act, cleanup, fireEvent, render, screen } from "@testing-library/react"
 import { createMemoryRouter, RouterProvider } from "react-router";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { routes } from "./routes";
-import { detenerMusica, efecto, iniciarMusica } from "./audio/sonidos";
+import {
+  audioDesbloqueado,
+  desbloquearAudio,
+  detenerMusica,
+  efecto,
+  iniciarMusica,
+} from "./audio/sonidos";
 import { useAppStore } from "./store/useAppStore";
 
 // jsdom no tiene WebGL: en los tests el juego se sustituye por un botón de salida
@@ -16,6 +22,10 @@ vi.mock("./audio/sonidos", () => ({
   detenerMusica: vi.fn(),
   efecto: vi.fn(),
   precargarEfectos: vi.fn(),
+  desbloquearAudio: vi.fn(),
+  // En los tests el audio ya está desbloqueado, salvo en el de la pantalla de inicio
+  audioDesbloqueado: vi.fn(() => true),
+  escucharClics: vi.fn(() => () => {}),
 }));
 
 const abrir = (ruta) => {
@@ -35,6 +45,7 @@ describe("navegación", () => {
     expect(
       await screen.findByRole("dialog", { name: "Bienvenido a mi portafolio" }),
     ).toBeInTheDocument();
+    await act(async () => {}); // que se registren los atajos antes de congelar el reloj
     vi.useFakeTimers();
 
     fireEvent.keyDown(window, { key: "Shift" }); // las teclas modificadoras no cuentan
@@ -75,6 +86,7 @@ describe("navegación", () => {
   it("cambia de idioma desde el selector sin salir de la bienvenida", async () => {
     const router = abrir("/");
     await screen.findByRole("dialog", { name: "Bienvenido a mi portafolio" });
+    await act(async () => {}); // que se registren los atajos antes de congelar el reloj
     vi.useFakeTimers();
     fireEvent.pointerDown(screen.getByRole("button", { name: "English" }));
     fireEvent.click(screen.getByRole("button", { name: "English" }));
@@ -144,10 +156,12 @@ describe("navegación", () => {
     const router = abrir("/");
     await screen.findByRole("dialog", { name: "Bienvenido a mi portafolio" });
     expect(iniciarMusica).toHaveBeenCalled();
+    await act(async () => {}); // que se registren los atajos antes de congelar el reloj
     vi.useFakeTimers();
 
     fireEvent.keyDown(window, { key: "Enter" });
-    expect(efecto).toHaveBeenCalledWith("seleccionar");
+    expect(efecto).toHaveBeenCalledTimes(1);
+    expect(efecto).toHaveBeenCalledWith("home");
     expect(detenerMusica).toHaveBeenCalled();
     act(() => vi.advanceTimersByTime(1000));
     expect(router.state.location.pathname).toBe("/menu");
@@ -155,6 +169,34 @@ describe("navegación", () => {
     vi.useRealTimers();
     fireEvent.keyDown(window, { key: "ArrowRight" });
     expect(efecto).toHaveBeenCalledWith("mover");
+  });
+
+  it("empieza con «Pulsa cualquier botón» si el navegador aún no deja sonar la página", async () => {
+    audioDesbloqueado.mockReturnValueOnce(false);
+    const router = abrir("/");
+    await screen.findByRole("dialog", { name: "Pulsa cualquier botón para empezar" });
+    expect(iniciarMusica).not.toHaveBeenCalled();
+
+    fireEvent.pointerDown(document.body);
+    expect(desbloquearAudio).toHaveBeenCalled();
+    expect(iniciarMusica).toHaveBeenCalled();
+    expect(
+      await screen.findByRole("dialog", { name: "Bienvenido a mi portafolio" }),
+    ).toBeInTheDocument();
+    expect(router.state.location.pathname).toBe("/");
+  });
+
+  it("suena «retroceder» al volver y «click» al abrir una tarjeta", async () => {
+    abrir("/menu");
+    fireEvent.keyDown(window, { key: "Enter" });
+    expect(efecto).toHaveBeenLastCalledWith("click");
+    await screen.findByRole("heading", { name: "Sobre mí" });
+    expect(screen.getByRole("link", { name: /Volver al menú/ })).toHaveAttribute(
+      "data-sonido",
+      "retroceder",
+    );
+    fireEvent.keyDown(window, { key: "Escape" });
+    expect(efecto).toHaveBeenLastCalledWith("retroceder");
   });
 
   it("el botón de sonido silencia sin salir de la bienvenida", async () => {

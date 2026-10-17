@@ -5,11 +5,25 @@ import { useAppStore } from "../store/useAppStore";
 //
 //   iniciarMusica()      empieza (o sigue) la música en bucle
 //   detenerMusica(ms)    la baja con un fundido y la para
-//   efecto("mover")      sonido corto: "mover" al cambiar de tarjeta, "seleccionar" al abrir
+//   efecto(nombre)       sonido corto:
+//                          "home"        al entrar al portafolio desde la bienvenida
+//                          "mover"       al cambiar de tarjeta en el menú
+//                          "click"       al seleccionar cualquier otra cosa
+//                          "retroceder"  al volver atrás
 //   precargarEfectos()   descarga los efectos para que el primero suene sin retraso
+//   desbloquearAudio()   llamar dentro de un clic o tecla: el navegador deja sonar la página
+//   audioDesbloqueado()  true si el visitante ya ha interactuado con la página
+//
+// Para que un botón o enlace suene al pulsarlo basta con data-sonido="click"
+// (o "retroceder"): lo escucha escucharClics(), que se activa en Layout.
 
 const MUSICA = "/sonidos/fondo.mp3";
-const EFECTOS = { mover: "/sonidos/mover.mp3", seleccionar: "/sonidos/seleccionar.mp3" };
+const EFECTOS = {
+  home: "/sonidos/seleccionar-home.mp3",
+  mover: "/sonidos/mover.mp3",
+  click: "/sonidos/click.mp3",
+  retroceder: "/sonidos/retroceder.mp3",
+};
 const VOLUMEN_MUSICA = 0.35;
 const VOLUMEN_EFECTOS = 0.5;
 
@@ -57,11 +71,28 @@ export function precargarEfectos() {
   for (const nombre of Object.keys(EFECTOS)) descargar(nombre).catch(() => {});
 }
 
+let desbloqueado = false;
+
+export const audioDesbloqueado = () =>
+  desbloqueado || (typeof navigator !== "undefined" && !!navigator.userActivation?.hasBeenActive);
+
+// El contexto se crea con el primer gesto del usuario, que es cuando el navegador lo permite
+function obtenerContexto() {
+  if (typeof AudioContext === "undefined") return null;
+  contexto ??= new AudioContext();
+  if (contexto.state === "suspended") contexto.resume().catch(() => {});
+  return contexto;
+}
+
+export function desbloquearAudio() {
+  desbloqueado = true;
+  if (sonidoActivo()) obtenerContexto();
+}
+
 export async function efecto(nombre) {
-  if (!sonidoActivo() || !EFECTOS[nombre] || typeof AudioContext === "undefined") return;
+  if (!sonidoActivo() || !EFECTOS[nombre]) return;
   try {
-    // El contexto se crea con el primer gesto del usuario, que es cuando el navegador lo permite
-    contexto ??= new AudioContext();
+    if (!obtenerContexto()) return;
     if (contexto.state === "suspended") await contexto.resume();
     buffers[nombre] ??= descargar(nombre).then((d) => contexto.decodeAudioData(d.slice(0)));
     const fuente = contexto.createBufferSource();
@@ -73,4 +104,14 @@ export async function efecto(nombre) {
   } catch {
     // Sin audio disponible: la interfaz funciona igual
   }
+}
+
+/** Hace sonar los elementos con data-sonido al pulsarlos. Devuelve la función para dejar de escuchar. */
+export function escucharClics() {
+  const alPulsar = (e) => {
+    const nombre = e.target.closest?.("[data-sonido]")?.dataset.sonido;
+    if (nombre) efecto(nombre);
+  };
+  document.addEventListener("click", alPulsar);
+  return () => document.removeEventListener("click", alPulsar);
 }

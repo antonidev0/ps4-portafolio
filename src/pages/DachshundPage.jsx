@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router";
+import { efecto } from "../audio/sonidos";
 import DachshundGame from "../apps/dachshund-3d/components/DachshundGame";
 import { useIdioma } from "../i18n/useIdioma";
 
@@ -11,7 +12,13 @@ export default function DachshundPage() {
   return (
     <main lang="es" className="fixed inset-0 z-30 animate-abre-juego motion-reduce:animate-none">
       <h1 className="sr-only">Dachshund 3D</h1>
-      <DachshundGame onExit={() => navigate(ruta("/menu"))} exitLabel={t("volverPortafolio")} />
+      <DachshundGame
+        onExit={() => {
+          efecto("retroceder");
+          navigate(ruta("/menu"));
+        }}
+        exitLabel={t("volverPortafolio")}
+      />
     </main>
   );
 }

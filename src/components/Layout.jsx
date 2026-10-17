@@ -1,5 +1,6 @@
 import { useEffect } from "react";
 import { Outlet, useMatches } from "react-router";
+import { escucharClics } from "../audio/sonidos";
 import OndasFondo from "./Fondo/OndasFondo";
 import { SEO } from "../i18n/seo";
 import { useIdioma } from "../i18n/useIdioma";
@@ -20,6 +21,9 @@ export default function Layout() {
       .querySelector('meta[name="description"]')
       ?.setAttribute("content", (SEO[idioma] ?? SEO.es).descripcion);
   }, [idioma, t]);
+
+  // Los botones y enlaces con data-sonido suenan al pulsarlos
+  useEffect(escucharClics, []);
 
   return (
     <>

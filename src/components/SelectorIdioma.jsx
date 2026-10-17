@@ -21,6 +21,7 @@ export default function SelectorIdioma({ className = "" }) {
         <button
           key={codigo}
           type="button"
+          data-sonido="click"
           lang={codigo}
           title={nombre}
           aria-label={nombre}

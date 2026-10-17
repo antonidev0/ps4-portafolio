@@ -5,6 +5,7 @@ import { SEO } from "./seo";
 export const TEXTOS = {
   es: {
     tituloPagina: SEO.es.titulo,
+    pulsaBoton: "Pulsa cualquier botón para empezar",
     sonido: "Sonido",
     sonidoActivado: "Activado",
     sonidoDesactivado: "Desactivado",
@@ -27,6 +28,7 @@ export const TEXTOS = {
   },
   en: {
     tituloPagina: SEO.en.titulo,
+    pulsaBoton: "Press any button to start",
     sonido: "Sound",
     sonidoActivado: "On",
     sonidoDesactivado: "Off",
@@ -49,6 +51,7 @@ export const TEXTOS = {
   },
   it: {
     tituloPagina: SEO.it.titulo,
+    pulsaBoton: "Premi un tasto qualsiasi per iniziare",
     sonido: "Audio",
     sonidoActivado: "Attivo",
     sonidoDesactivado: "Disattivato",

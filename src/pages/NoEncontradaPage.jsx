@@ -12,6 +12,7 @@ export default function NoEncontradaPage({ titulo, mensaje }) {
       <p className="text-white/70">{mensaje ?? t("noEncontradaMensaje")}</p>
       <Link
         to={ruta("/menu")}
+        data-sonido="click"
         className="mx-auto rounded-full border border-white/30 px-5 py-2 transition-colors hover:bg-white/10"
       >
         {t("irMenu")}
