@@ -1,0 +1,361 @@
+/* Dachshund 3D — todos los selectores cuelgan de .dachshund-game para no afectar a otras páginas. */
+
+.dachshund-game {
+  --dg-bg: #030814;
+  --dg-blue: #1e7bff;
+  --dg-blue-2: #55d6ff;
+  --dg-violet: #9a5cff;
+  --dg-text: #eaf2ff;
+  --dg-muted: rgba(220, 232, 255, 0.66);
+  --dg-panel: rgba(8, 20, 46, 0.72);
+  --dg-panel-strong: rgba(6, 14, 34, 0.9);
+  --dg-line: rgba(140, 190, 255, 0.22);
+  --dg-glow: 0 0 0 2px rgba(255, 255, 255, 0.85), 0 0 22px rgba(85, 170, 255, 0.55);
+  --dg-radius: 14px;
+  --dg-font: 'SST', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+
+  position: relative;
+  width: 100%;
+  height: 100%;
+  min-height: 320px;
+  overflow: hidden;
+  background: var(--dg-bg);
+  color: var(--dg-text);
+  font-family: var(--dg-font);
+  -webkit-font-smoothing: antialiased;
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+  isolation: isolate;
+}
+.dachshund-game *,
+.dachshund-game *::before,
+.dachshund-game *::after { box-sizing: border-box; }
+.dachshund-game.is-playing { touch-action: none; }
+
+.dachshund-game .dg-stage { position: absolute; inset: 0; z-index: 0; }
+.dachshund-game .dg-canvas { display: block; width: 100%; height: 100%; }
+.dachshund-game .dg-vignette {
+  position: absolute; inset: 0; z-index: 1; pointer-events: none;
+  background: radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0, 4, 14, 0.65) 100%);
+}
+.dachshund-game.is-menu .dg-vignette {
+  background:
+    linear-gradient(90deg, rgba(2, 8, 22, 0.92) 0%, rgba(2, 8, 22, 0.55) 42%, transparent 70%),
+    radial-gradient(ellipse at 50% 45%, transparent 55%, rgba(0, 4, 14, 0.65) 100%);
+}
+
+/* ---------- Capas ---------- */
+.dachshund-game .dg-layer {
+  position: absolute; inset: 0; z-index: 5;
+  display: flex; align-items: safe center; justify-content: flex-start;
+  padding: max(24px, env(safe-area-inset-top)) clamp(16px, 5vw, 72px) max(24px, env(safe-area-inset-bottom));
+  overflow-y: auto;
+  animation: dg-fade-in 0.35s ease both;
+}
+.dachshund-game .dg-layer--dim {
+  justify-content: center;
+  background: radial-gradient(ellipse at center, rgba(2, 8, 24, 0.55), rgba(2, 6, 18, 0.82));
+  backdrop-filter: blur(3px);
+}
+.dachshund-game .dg-modal {
+  position: absolute; inset: 0; z-index: 20;
+  display: grid; place-items: center; padding: 16px;
+  background: rgba(1, 4, 12, 0.6);
+  backdrop-filter: blur(4px);
+  animation: dg-fade-in 0.2s ease both;
+}
+
+/* ---------- Menú principal ---------- */
+.dachshund-game .dg-menu { width: min(460px, 100%); display: flex; flex-direction: column; gap: 22px; animation: dg-rise 0.5s ease both; }
+.dachshund-game .dg-menu__kicker { font-size: 12px; letter-spacing: 0.32em; text-transform: uppercase; color: var(--dg-blue-2); }
+.dachshund-game .dg-title {
+  margin: 6px 0 10px;
+  font-weight: 200;
+  font-size: clamp(40px, 7vw, 72px);
+  line-height: 0.95;
+  letter-spacing: 0.04em;
+  text-shadow: 0 0 24px rgba(60, 150, 255, 0.55);
+}
+.dachshund-game .dg-title__accent { font-weight: 700; color: var(--dg-blue-2); }
+.dachshund-game .dg-menu__desc { margin: 0; color: var(--dg-muted); font-size: 15px; line-height: 1.55; max-width: 40ch; }
+.dachshund-game .dg-menu__list { display: flex; flex-direction: column; gap: 8px; }
+.dachshund-game .dg-menu__tip { margin: 0; font-size: 12px; color: var(--dg-muted); }
+.dachshund-game kbd {
+  display: inline-grid; place-items: center; min-width: 24px; height: 24px; padding: 0 6px; margin: 0 2px;
+  border-radius: 6px; border: 1px solid var(--dg-line); background: rgba(255, 255, 255, 0.06);
+  font: 600 12px/1 var(--dg-font); color: var(--dg-text);
+}
+
+/* ---------- Botones ---------- */
+.dachshund-game .dg-btn {
+  position: relative;
+  display: flex; align-items: center; gap: 12px;
+  width: 100%; min-height: 48px; padding: 10px 18px;
+  border: 1px solid var(--dg-line); border-radius: 10px;
+  background: linear-gradient(180deg, rgba(30, 70, 140, 0.35), rgba(10, 26, 60, 0.55));
+  color: var(--dg-text);
+  font: 400 16px/1.2 var(--dg-font);
+  text-align: left;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease, border-color 0.2s ease, opacity 0.2s;
+  backdrop-filter: blur(8px);
+}
+.dachshund-game .dg-btn:hover:not(:disabled) { background: linear-gradient(180deg, rgba(40, 100, 200, 0.5), rgba(14, 40, 90, 0.7)); border-color: rgba(160, 210, 255, 0.5); }
+.dachshund-game .dg-btn:focus-visible,
+.dachshund-game .dg-btn:focus { outline: none; box-shadow: var(--dg-glow); border-color: transparent; transform: translateX(4px); }
+.dachshund-game .dg-btn:active:not(:disabled) { transform: scale(0.98); filter: brightness(1.15); }
+.dachshund-game .dg-btn:disabled { opacity: 0.42; cursor: not-allowed; filter: grayscale(0.5); }
+.dachshund-game .dg-btn--primary { background: linear-gradient(180deg, #2f8bff, #1452c8); border-color: rgba(170, 215, 255, 0.6); font-weight: 600; }
+.dachshund-game .dg-btn--primary:hover:not(:disabled) { background: linear-gradient(180deg, #4a9cff, #1a62e0); }
+.dachshund-game .dg-btn--ghost { background: rgba(255, 255, 255, 0.04); }
+.dachshund-game .dg-btn--danger { background: linear-gradient(180deg, #e2456b, #a51f45); border-color: rgba(255, 180, 200, 0.5); font-weight: 600; }
+.dachshund-game .dg-btn__icon { width: 22px; text-align: center; opacity: 0.85; flex-shrink: 0; }
+.dachshund-game .dg-btn__label { flex: 1; }
+.dachshund-game .dg-btn__hint { font-size: 12px; color: var(--dg-muted); white-space: nowrap; }
+.dachshund-game .dg-btn--primary .dg-btn__hint { color: rgba(255, 255, 255, 0.8); }
+.dachshund-game .dg-btn.is-loading .dg-btn__label { opacity: 0.6; }
+.dachshund-game .dg-spinner {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: #fff;
+  animation: dg-spin 0.8s linear infinite;
+}
+
+/* ---------- Paneles ---------- */
+.dachshund-game .dg-panel {
+  width: min(560px, 100%);
+  margin: auto 0;
+  padding: clamp(18px, 3vw, 30px);
+  border-radius: var(--dg-radius);
+  border: 1px solid var(--dg-line);
+  background: linear-gradient(160deg, rgba(14, 34, 76, 0.78), var(--dg-panel));
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(14px);
+  animation: dg-rise 0.4s ease both;
+}
+.dachshund-game .dg-panel--wide { width: min(900px, 100%); }
+.dachshund-game .dg-panel--narrow { width: min(420px, 100%); }
+.dachshund-game .dg-panel--overlay { margin: auto; }
+.dachshund-game .dg-panel--final { border-color: rgba(255, 216, 74, 0.5); box-shadow: 0 0 40px rgba(255, 200, 60, 0.25), 0 20px 60px rgba(0, 0, 0, 0.5); }
+.dachshund-game .dg-panel__head { margin-bottom: 18px; }
+.dachshund-game .dg-panel__title { margin: 0; font-weight: 300; font-size: clamp(24px, 4vw, 34px); letter-spacing: 0.02em; }
+.dachshund-game .dg-panel__subtitle { margin: 6px 0 0; color: var(--dg-muted); font-size: 14px; }
+.dachshund-game .dg-panel__foot { margin-top: 20px; max-width: 220px; }
+.dachshund-game .dg-subhead { margin: 18px 0 10px; font-size: 12px; font-weight: 600; letter-spacing: 0.22em; text-transform: uppercase; color: var(--dg-blue-2); }
+.dachshund-game .dg-card .dg-subhead { margin-top: 0; }
+.dachshund-game .dg-text { margin: 0; color: var(--dg-muted); font-size: 14px; line-height: 1.55; }
+.dachshund-game .dg-center { text-align: center; margin: 12px 0 0; }
+.dachshund-game .dg-stack { display: flex; flex-direction: column; gap: 8px; }
+.dachshund-game .dg-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin-top: 18px; }
+.dachshund-game .dg-row .dg-btn { width: auto; flex: 1 1 160px; }
+.dachshund-game .dg-row--center { justify-content: center; }
+
+/* ---------- Niveles ---------- */
+.dachshund-game .dg-levels { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 14px; }
+.dachshund-game .dg-btn--card {
+  flex-direction: column; align-items: flex-start; gap: 8px;
+  min-height: 210px; padding: 18px;
+  border-radius: 12px;
+}
+.dachshund-game .dg-btn--card .dg-btn__label { display: flex; flex-direction: column; gap: 8px; width: 100%; height: 100%; }
+.dachshund-game .dg-btn--card:focus { transform: translateY(-3px); }
+.dachshund-game .dg-level--park { background: linear-gradient(160deg, rgba(30, 110, 255, 0.45), rgba(6, 20, 52, 0.85)); }
+.dachshund-game .dg-level--garden { background: linear-gradient(160deg, rgba(140, 80, 255, 0.45), rgba(16, 8, 46, 0.85)); }
+.dachshund-game .dg-level--core { background: linear-gradient(160deg, rgba(0, 200, 255, 0.35), rgba(60, 0, 50, 0.6), rgba(3, 8, 20, 0.9)); }
+.dachshund-game .dg-level.is-locked { opacity: 0.55; }
+.dachshund-game .dg-level__num { font-size: 12px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--dg-muted); }
+.dachshund-game .dg-level__name { font-size: 24px; font-weight: 300; }
+.dachshund-game .dg-level__meta { display: flex; gap: 10px; align-items: center; font-size: 13px; flex-wrap: wrap; }
+.dachshund-game .dg-level__desc { font-size: 13px; color: var(--dg-muted); line-height: 1.45; flex: 1; }
+.dachshund-game .dg-level__foot { display: flex; justify-content: space-between; width: 100%; font-size: 12px; color: var(--dg-muted); gap: 8px; }
+.dachshund-game .dg-chip { padding: 3px 9px; border-radius: 999px; font-size: 11px; font-weight: 600; letter-spacing: 0.06em; background: rgba(85, 214, 255, 0.2); color: #bfefff; }
+.dachshund-game .dg-chip--2 { background: rgba(170, 120, 255, 0.25); color: #e0ccff; }
+.dachshund-game .dg-chip--3 { background: rgba(255, 63, 174, 0.25); color: #ffc6e6; }
+
+/* ---------- Estadísticas ---------- */
+.dachshund-game .dg-stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 14px; }
+.dachshund-game .dg-card { padding: 16px; border-radius: 12px; border: 1px solid var(--dg-line); background: rgba(255, 255, 255, 0.03); }
+.dachshund-game .dg-stat { display: flex; justify-content: space-between; gap: 12px; padding: 8px 0; border-bottom: 1px solid rgba(140, 190, 255, 0.1); font-size: 14px; }
+.dachshund-game .dg-stat:last-child { border-bottom: 0; }
+.dachshund-game .dg-stat__label { color: var(--dg-muted); }
+.dachshund-game .dg-stat__value { font-weight: 600; font-variant-numeric: tabular-nums; text-align: right; }
+.dachshund-game .dg-stat.is-highlight .dg-stat__value { color: var(--dg-blue-2); font-size: 18px; }
+.dachshund-game .dg-results { padding: 4px 16px; border-radius: 12px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--dg-line); }
+.dachshund-game .dg-badge {
+  display: inline-block; margin-bottom: 12px; padding: 6px 14px; border-radius: 999px;
+  background: linear-gradient(90deg, #ffd84a, #ffb020); color: #2a1a00; font-weight: 700; font-size: 13px;
+  animation: dg-pulse 1.2s ease-in-out infinite;
+}
+.dachshund-game .dg-rounds { margin-top: 12px; font-size: 13px; color: var(--dg-muted); }
+.dachshund-game .dg-rounds summary { cursor: pointer; }
+.dachshund-game .dg-rounds ol { margin: 8px 0 0; padding-left: 20px; max-height: 120px; overflow: auto; }
+
+/* ---------- Controles y tutorial ---------- */
+.dachshund-game .dg-controls { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.dachshund-game .dg-controls li { display: flex; align-items: center; gap: 14px; font-size: 14px; }
+.dachshund-game .dg-controls__keys { min-width: 130px; display: flex; flex-wrap: wrap; gap: 2px; }
+.dachshund-game .dg-tutorial { list-style: none; margin: 0; padding: 0; display: grid; gap: 12px; font-size: 15px; line-height: 1.4; }
+.dachshund-game .dg-tutorial li { display: flex; gap: 12px; align-items: center; }
+.dachshund-game .dg-tutorial__icon { width: 34px; height: 34px; flex-shrink: 0; display: grid; place-items: center; border-radius: 10px; background: rgba(85, 214, 255, 0.14); }
+
+/* ---------- Sonido ---------- */
+.dachshund-game .dg-sound { display: grid; gap: 14px; }
+.dachshund-game .dg-toggle { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 15px; cursor: pointer; position: relative; }
+.dachshund-game .dg-toggle input { position: absolute; opacity: 0; width: 46px; height: 26px; right: 0; margin: 0; cursor: pointer; }
+.dachshund-game .dg-toggle__track { width: 46px; height: 26px; border-radius: 999px; background: rgba(255, 255, 255, 0.15); position: relative; transition: background 0.2s; flex-shrink: 0; }
+.dachshund-game .dg-toggle__thumb { position: absolute; top: 3px; left: 3px; width: 20px; height: 20px; border-radius: 50%; background: #fff; transition: transform 0.2s; }
+.dachshund-game .dg-toggle input:checked + .dg-toggle__track { background: var(--dg-blue); }
+.dachshund-game .dg-toggle input:checked + .dg-toggle__track .dg-toggle__thumb { transform: translateX(20px); }
+.dachshund-game .dg-toggle input:focus-visible + .dg-toggle__track { box-shadow: var(--dg-glow); }
+.dachshund-game .dg-slider { display: grid; gap: 6px; font-size: 14px; color: var(--dg-muted); }
+.dachshund-game .dg-slider.is-disabled { opacity: 0.45; }
+.dachshund-game .dg-slider__label { display: flex; justify-content: space-between; }
+.dachshund-game .dg-slider output { color: var(--dg-text); font-variant-numeric: tabular-nums; }
+.dachshund-game .dg-slider input[type='range'] { width: 100%; accent-color: var(--dg-blue); height: 28px; cursor: pointer; }
+.dachshund-game .dg-slider input[type='range']:focus-visible { outline: 2px solid #fff; outline-offset: 2px; border-radius: 4px; }
+
+/* ---------- HUD ---------- */
+.dachshund-game .dg-hud {
+  position: absolute; z-index: 4; left: 0; right: 0; top: 0;
+  display: flex; align-items: stretch; gap: 10px;
+  padding: max(10px, env(safe-area-inset-top)) clamp(10px, 2vw, 22px) 0;
+  pointer-events: none;
+  animation: dg-drop 0.4s ease both;
+}
+.dachshund-game .dg-hud__block {
+  padding: 8px 14px; border-radius: 12px;
+  background: linear-gradient(180deg, rgba(10, 28, 64, 0.72), rgba(6, 16, 38, 0.6));
+  border: 1px solid var(--dg-line);
+  backdrop-filter: blur(10px);
+  display: flex; flex-direction: column; justify-content: center; gap: 3px;
+  min-width: 0;
+}
+.dachshund-game .dg-hud__mode { flex: 1 1 220px; max-width: 300px; }
+.dachshund-game .dg-hud__score { flex: 0 0 auto; align-items: center; min-width: 120px; margin: 0 auto; }
+.dachshund-game .dg-hud__stats { flex: 0 1 auto; flex-direction: row; gap: 16px; align-items: center; }
+.dachshund-game .dg-hud__pair { display: flex; flex-direction: column; gap: 2px; }
+.dachshund-game .dg-hud__pair b { font-size: 15px; font-weight: 600; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.dachshund-game .dg-hud__label { font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dg-muted); white-space: nowrap; }
+.dachshund-game .dg-hud__title { font-size: 16px; font-weight: 400; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.dachshund-game .dg-hud__small { font-size: 12px; color: var(--dg-muted); white-space: nowrap; }
+.dachshund-game .dg-hud__big { font-size: 28px; font-weight: 300; line-height: 1; font-variant-numeric: tabular-nums; animation: dg-pop 0.35s ease; }
+.dachshund-game .dg-hud__actions { display: flex; gap: 8px; align-items: flex-start; pointer-events: auto; }
+.dachshund-game .dg-progress { height: 6px; border-radius: 99px; background: rgba(255, 255, 255, 0.12); overflow: hidden; }
+.dachshund-game .dg-progress__bar { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--dg-blue), var(--dg-blue-2)); box-shadow: 0 0 10px var(--dg-blue-2); transition: width 0.3s ease; }
+
+.dachshund-game .dg-icon-btn,
+.dachshund-game .dg-mute {
+  width: 44px; height: 44px; border-radius: 50%;
+  display: grid; place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  background: rgba(12, 30, 66, 0.7);
+  color: #fff; font: 600 15px/1 var(--dg-font);
+  cursor: pointer; backdrop-filter: blur(8px);
+  transition: transform 0.15s, box-shadow 0.2s;
+}
+.dachshund-game .dg-icon-btn:hover, .dachshund-game .dg-mute:hover { box-shadow: var(--dg-glow); }
+.dachshund-game .dg-icon-btn:active, .dachshund-game .dg-mute:active { transform: scale(0.92); }
+.dachshund-game .dg-icon-btn:focus-visible, .dachshund-game .dg-mute:focus-visible { outline: none; box-shadow: var(--dg-glow); }
+.dachshund-game .dg-mute { position: absolute; z-index: 6; right: max(14px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom)); }
+.dachshund-game.is-playing .dg-mute { bottom: auto; top: calc(max(10px, env(safe-area-inset-top)) + 52px); right: clamp(10px, 2vw, 22px); width: 40px; height: 40px; }
+
+/* ---------- Cuenta atrás y avisos ---------- */
+.dachshund-game .dg-countdown {
+  position: absolute; z-index: 7; left: 50%; top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(64px, 14vw, 140px); font-weight: 200;
+  color: #fff; text-shadow: 0 0 30px var(--dg-blue-2), 0 0 60px var(--dg-blue);
+  pointer-events: none;
+  animation: dg-count 0.9s ease-out both;
+}
+.dachshund-game .dg-banner {
+  position: absolute; z-index: 7; left: 50%; top: 34%;
+  transform: translate(-50%, -50%);
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 16px 34px; border-radius: 14px;
+  background: linear-gradient(180deg, rgba(20, 60, 140, 0.85), rgba(8, 22, 56, 0.85));
+  border: 1px solid rgba(160, 210, 255, 0.5);
+  box-shadow: 0 0 40px rgba(60, 150, 255, 0.45);
+  text-align: center; pointer-events: none; white-space: nowrap;
+  animation: dg-banner 0.5s cubic-bezier(0.2, 0.9, 0.3, 1.3) both;
+}
+.dachshund-game .dg-banner strong { font-size: clamp(22px, 5vw, 40px); font-weight: 700; letter-spacing: 0.12em; }
+.dachshund-game .dg-banner span { font-size: 14px; color: var(--dg-muted); }
+.dachshund-game .dg-banner--round strong { color: #ffd84a; text-shadow: 0 0 18px rgba(255, 200, 60, 0.6); }
+.dachshund-game .dg-banner--warn { background: linear-gradient(180deg, rgba(140, 20, 80, 0.85), rgba(50, 6, 34, 0.85)); border-color: rgba(255, 120, 190, 0.5); }
+.dachshund-game .dg-banner--warn strong { font-size: clamp(16px, 3.5vw, 24px); }
+.dachshund-game .dg-hint {
+  position: absolute; z-index: 6; left: 50%; bottom: 18%; transform: translateX(-50%);
+  margin: 0; padding: 8px 16px; border-radius: 99px;
+  background: rgba(6, 18, 44, 0.78); border: 1px solid var(--dg-line); font-size: 14px;
+  pointer-events: none; white-space: nowrap; animation: dg-fade-in 0.4s ease both;
+}
+
+/* ---------- Cruceta táctil ---------- */
+.dachshund-game .dg-pad {
+  position: absolute; z-index: 6;
+  right: max(14px, env(safe-area-inset-right)); bottom: max(14px, env(safe-area-inset-bottom));
+  width: 180px; height: 180px;
+  display: grid; grid-template-columns: repeat(3, 1fr); grid-template-rows: repeat(3, 1fr); gap: 4px;
+  touch-action: none;
+}
+.dachshund-game .dg-pad__btn {
+  border-radius: 16px; border: 1px solid rgba(160, 210, 255, 0.45);
+  background: rgba(12, 34, 80, 0.62); color: #fff; font-size: 22px;
+  backdrop-filter: blur(6px); touch-action: none; cursor: pointer;
+  -webkit-user-select: none; user-select: none;
+}
+.dachshund-game .dg-pad__btn:active { background: rgba(40, 120, 255, 0.85); box-shadow: 0 0 18px rgba(85, 214, 255, 0.7); transform: scale(0.95); }
+.dachshund-game .dg-pad__btn--up { grid-column: 2; grid-row: 1; }
+.dachshund-game .dg-pad__btn--left { grid-column: 1; grid-row: 2; }
+.dachshund-game .dg-pad__btn--right { grid-column: 3; grid-row: 2; }
+.dachshund-game .dg-pad__btn--down { grid-column: 2; grid-row: 3; }
+
+.dachshund-game .dg-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); }
+
+/* ---------- Responsive ---------- */
+@media (max-width: 760px) {
+  .dachshund-game.is-menu .dg-vignette { background: linear-gradient(180deg, rgba(2, 8, 22, 0.55), rgba(2, 8, 22, 0.88)); }
+  .dachshund-game .dg-layer { justify-content: center; align-items: flex-start; }
+  .dachshund-game .dg-menu { margin: auto 0; gap: 16px; }
+  .dachshund-game .dg-menu__tip { display: none; }
+  .dachshund-game .dg-btn { min-height: 46px; font-size: 15px; }
+  .dachshund-game .dg-hud { flex-wrap: wrap; gap: 6px; }
+  .dachshund-game .dg-hud__block { padding: 6px 10px; }
+  .dachshund-game .dg-hud__mode { flex: 1 1 140px; order: 1; }
+  .dachshund-game .dg-hud__score { order: 2; min-width: 96px; margin: 0; }
+  .dachshund-game .dg-hud__actions { order: 3; }
+  .dachshund-game .dg-hud__stats { order: 4; flex: 1 1 100%; justify-content: space-around; padding: 4px 10px; }
+  .dachshund-game .dg-hud__pair { flex-direction: row; align-items: baseline; gap: 5px; min-width: 0; }
+  .dachshund-game .dg-hud__stats .dg-hud__label { letter-spacing: 0.06em; }
+  .dachshund-game .dg-hud__pair b { font-size: 13px; }
+  .dachshund-game .dg-hud__big { font-size: 22px; }
+  .dachshund-game .dg-hud__small { display: none; }
+  .dachshund-game .dg-hud__mode .dg-hud__small { display: block; }
+  .dachshund-game .dg-pad { width: 156px; height: 156px; }
+  .dachshund-game.is-playing .dg-mute { top: auto; bottom: max(14px, env(safe-area-inset-bottom)); left: max(14px, env(safe-area-inset-left)); right: auto; }
+}
+@media (max-height: 520px) and (orientation: landscape) {
+  .dachshund-game .dg-pad { width: 132px; height: 132px; }
+  .dachshund-game .dg-menu { gap: 10px; }
+  .dachshund-game .dg-menu__desc { display: none; }
+  .dachshund-game .dg-btn { min-height: 40px; padding: 6px 14px; }
+}
+
+/* ---------- Animaciones ---------- */
+@keyframes dg-fade-in { from { opacity: 0; } }
+@keyframes dg-rise { from { opacity: 0; transform: translateY(16px); } }
+@keyframes dg-drop { from { opacity: 0; transform: translateY(-12px); } }
+@keyframes dg-spin { to { transform: rotate(360deg); } }
+@keyframes dg-pop { 0% { transform: scale(1.25); color: var(--dg-blue-2); } 100% { transform: scale(1); } }
+@keyframes dg-pulse { 50% { transform: scale(1.06); } }
+@keyframes dg-count {
+  0% { opacity: 0; transform: translate(-50%, -50%) scale(1.8); }
+  25% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+  100% { opacity: 0; transform: translate(-50%, -50%) scale(0.85); }
+}
+@keyframes dg-banner { from { opacity: 0; transform: translate(-50%, -50%) scale(0.7); } }
+@media (prefers-reduced-motion: reduce) {
+  .dachshund-game *, .dachshund-game *::before, .dachshund-game *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

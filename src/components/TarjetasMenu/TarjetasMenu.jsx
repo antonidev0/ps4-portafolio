@@ -1,11 +1,15 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useAnchoVentana } from "../../hooks/useAnchoVentana";
+
+const ANCHO_COMPACTO = 640; // por debajo, el título va debajo de la tarjeta
+const FONDO_TARJETA = "linear-gradient(160deg, #1b4fc4, #0a2a8a)";
 
 /**
  * Fila horizontal de tarjetas estilo menú de consola.
  * La tarjeta seleccionada se agranda, muestra un borde de luz y su título al lado,
  * y la fila se desliza para mantenerla siempre en la misma posición.
  *
- * Navegación: flechas ← → (o A / D), rueda del ratón, clic o toque.
+ * Navegación: flechas ← → (o A / D), rueda del ratón, clic o deslizar el dedo.
  * Enter / Espacio o clic sobre la tarjeta ya seleccionada → onAbrir(item).
  * Escape / Retroceso → onAtras().
  *
@@ -13,19 +17,19 @@ import { useCallback, useEffect, useRef, useState } from "react";
  *   <TarjetasMenu items={items} onAbrir={(item) => console.log(item)} />
  *
  * Cada item:
- *   { id, titulo, icono?: ReactNode, imagen?: string, etiqueta?: string, color?: string }
- *   - icono:    un SVG o cualquier elemento React (se ve centrado en la tarjeta)
+ *   { id, titulo, Icono?: componente, imagen?: string, etiqueta?: string, color?: string }
+ *   - Icono:    componente SVG (se ve centrado en la tarjeta)
  *   - imagen:   URL de una portada (ocupa toda la tarjeta, como un juego)
  *   - etiqueta: texto pequeño abajo de la tarjeta cuando NO está seleccionada
  *   - color:    color de fondo de la tarjeta (por defecto azul)
  *
  * Props opcionales:
- *   tamano      lado de las tarjetas normales en px (por defecto 180)
+ *   tamano      lado de las tarjetas normales en px (por defecto se adapta a la ventana)
  *   escala      cuánto crece la seleccionada (por defecto 1.6)
- *   inicial     índice seleccionado al inicio (por defecto 1)
+ *   inicial     índice seleccionado al inicio (por defecto 0)
  *   onCambio    se llama con (item, indice) al cambiar de tarjeta
  *   onAtras     se llama al pulsar Escape o Retroceso
- *   teclado     escuchar las flechas en toda la ventana (por defecto true)
+ *   teclado     escuchar las teclas en toda la ventana (por defecto true)
  *   animarEntrada  al aparecer, las tarjetas empiezan pequeñas y crecen (por defecto true)
  */
 export default function TarjetasMenu({
@@ -33,54 +37,67 @@ export default function TarjetasMenu({
   onAbrir,
   onCambio,
   onAtras,
-  tamano = 180,
+  tamano: tamanoProp,
   escala = 1.6,
-  inicial = 1,
+  inicial = 0,
   teclado = true,
   animarEntrada = true,
 }) {
-  const [indice, setIndice] = useState(
-    Math.min(inicial, Math.max(items.length - 1, 0)),
-  );
+  const [indiceGuardado, setIndice] = useState(inicial);
+  const indice = Math.max(0, Math.min(indiceGuardado, items.length - 1));
   const ruedaRef = useRef(0);
+  const toqueRef = useRef(null);
+  const listaRef = useRef(null);
+
+  const ancho = useAnchoVentana();
+  const compacto = ancho < ANCHO_COMPACTO;
+  const tamano =
+    tamanoProp ??
+    Math.round(compacto ? Math.max(84, ancho * 0.24) : Math.min(180, Math.max(110, ancho * 0.14)));
 
   const gap = Math.round(tamano * 0.03);
   const grande = Math.round(tamano * escala);
   const barra = Math.round(tamano * 0.42); // franja inferior con la flecha
-  // La seleccionada queda siempre en la segunda posición, como en la imagen
+  // La seleccionada queda siempre en la misma posición, como en la consola
   const ancla = tamano + gap * 6;
+  const altoFila = 12 + grande + barra;
 
-  const mover = useCallback(
-    (paso) => {
-      const n = Math.max(0, Math.min(items.length - 1, indice + paso));
-      if (n === indice) return; // ya está en el borde: no se mueve ni suena
-      setIndice(n);
-      onCambio?.(items[n], n);
-    },
-    [items, indice, onCambio],
-  );
+  const mover = (paso) => {
+    const n = Math.max(0, Math.min(items.length - 1, indice + paso));
+    if (n === indice) return; // ya está en el borde: no se mueve
+    setIndice(n);
+    onCambio?.(items[n], n);
+  };
 
-  // Teclado
+  const alPulsar = useEffectEvent((e) => {
+    if (e.ctrlKey || e.metaKey || e.altKey) return;
+    if (["ArrowRight", "d", "D"].includes(e.key)) {
+      e.preventDefault();
+      mover(1);
+    } else if (["ArrowLeft", "a", "A"].includes(e.key)) {
+      e.preventDefault();
+      mover(-1);
+    } else if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      if (items[indice]) onAbrir?.(items[indice]);
+    } else if (e.key === "Escape" || e.key === "Backspace") {
+      e.preventDefault();
+      onAtras?.();
+    }
+  });
+
+  // Teclado en toda la ventana
   useEffect(() => {
     if (!teclado) return;
-    const alPulsar = (e) => {
-      if (["ArrowRight", "d", "D"].includes(e.key)) {
-        e.preventDefault();
-        mover(1);
-      } else if (["ArrowLeft", "a", "A"].includes(e.key)) {
-        e.preventDefault();
-        mover(-1);
-      } else if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        items[indice] && onAbrir?.(items[indice]);
-      } else if (e.key === "Escape" || e.key === "Backspace") {
-        e.preventDefault();
-        onAtras?.();
-      }
-    };
-    window.addEventListener("keydown", alPulsar);
-    return () => window.removeEventListener("keydown", alPulsar);
-  }, [teclado, mover, indice, items, onAbrir, onAtras]);
+    const escuchar = (e) => alPulsar(e);
+    window.addEventListener("keydown", escuchar);
+    return () => window.removeEventListener("keydown", escuchar);
+  }, [teclado]);
+
+  // Foco en la lista para que los lectores de pantalla anuncien la tarjeta activa
+  useEffect(() => {
+    listaRef.current?.focus({ preventScroll: true });
+  }, []);
 
   // Rueda del ratón (con pausa para que no salte de golpe)
   const alRueda = (e) => {
@@ -93,8 +110,9 @@ export default function TarjetasMenu({
   };
 
   // Deslizar con el dedo
-  const toqueRef = useRef(null);
-  const alTocar = (e) => (toqueRef.current = e.touches[0].clientX);
+  const alTocar = (e) => {
+    toqueRef.current = e.touches[0].clientX;
+  };
   const alSoltar = (e) => {
     if (toqueRef.current == null) return;
     const dx = e.changedTouches[0].clientX - toqueRef.current;
@@ -105,172 +123,110 @@ export default function TarjetasMenu({
   const desplazamiento = ancla - indice * (tamano + gap);
   const actual = items[indice];
 
+  // El título se coloca a la derecha de la seleccionada o, en pantallas estrechas, debajo
+  const posicionTitulo = compacto
+    ? { left: ancla, top: altoFila + 20 }
+    : {
+        left: ancla + grande + gap * 6,
+        top: altoFila - barra * 0.25,
+        transform: "translateY(-100%)",
+      };
+
   return (
     <div
+      ref={listaRef}
+      tabIndex={0}
       onWheel={alRueda}
       onTouchStart={alTocar}
       onTouchEnd={alSoltar}
-      style={{
-        position: "relative",
-        width: "100%",
-        overflow: "hidden",
-        height: grande + barra + 40,
-        userSelect: "none",
-      }}
+      className="relative w-full select-none overflow-hidden outline-none"
+      style={{ height: altoFila + (compacto ? 90 : 28) }}
       role="listbox"
-      aria-label="Menú de aplicaciones"
+      aria-label="Menú del portafolio"
+      aria-orientation="horizontal"
       aria-activedescendant={actual ? `tarjeta-${actual.id}` : undefined}
     >
-      <style>{CSS}</style>
-
-      <div className={animarEntrada ? "tm-entrada" : undefined}>
+      <div
+        className={
+          animarEntrada
+            ? "origin-[20%_40%] animate-menu-crece motion-reduce:animate-none"
+            : undefined
+        }
+      >
         <div
-          className="tm-fila"
-          style={{
-            gap,
-            transform: `translateX(${desplazamiento}px)`,
-            paddingTop: 12,
-          }}
+          className="flex items-start pt-3 transition-transform duration-[450ms] ease-ps will-change-transform motion-reduce:transition-none"
+          style={{ gap, transform: `translateX(${desplazamiento}px)` }}
         >
           {items.map((item, i) => {
             const sel = i === indice;
             const lado = sel ? grande : tamano;
+            const { Icono } = item;
             return (
               <div
                 key={item.id}
                 id={`tarjeta-${item.id}`}
                 role="option"
                 aria-selected={sel}
-                className={`tm-tarjeta${sel ? " tm-sel" : ""}`}
-                style={{ width: lado, flexShrink: 0 }}
+                aria-label={item.titulo}
+                className="group relative shrink-0 cursor-pointer transition-[width] duration-[350ms] ease-ps motion-reduce:transition-none"
+                style={{ width: lado }}
                 onClick={() => (sel ? onAbrir?.(item) : mover(i - indice))}
               >
                 <div
-                  className="tm-cara"
+                  className={`relative grid place-items-center overflow-hidden text-white transition-[height,filter] duration-[350ms] ease-ps motion-reduce:transition-none ${
+                    sel
+                      ? "shadow-[0_0_0_4px_rgba(255,255,255,.85),0_0_28px_rgba(140,190,255,.55),0_10px_30px_rgba(0,0,0,.35)] after:pointer-events-none after:absolute after:inset-0 after:bg-gradient-to-br after:from-white/20 after:to-transparent after:to-55% after:content-['']"
+                      : "shadow-[0_6px_18px_rgba(0,0,0,.25)] brightness-[.88] group-hover:brightness-105"
+                  }`}
                   style={{
                     height: lado,
                     background: item.imagen
                       ? `center / cover no-repeat url(${item.imagen})`
-                      : item.color ||
-                        "linear-gradient(160deg, #1b4fc4, #0a2a8a)",
+                      : item.color || FONDO_TARJETA,
                   }}
                 >
-                  {!item.imagen && item.icono && (
-                    <div
-                      className="tm-icono"
+                  {!item.imagen && Icono && (
+                    <Icono
+                      className="transition-[width,height] duration-[350ms] motion-reduce:transition-none"
                       style={{ width: lado * 0.5, height: lado * 0.5 }}
-                    >
-                      {item.icono}
-                    </div>
+                    />
                   )}
                   {!sel && item.etiqueta && (
-                    <span className="tm-etiqueta">{item.etiqueta}</span>
+                    <span className="absolute inset-x-0 bottom-[12%] text-center text-[13px] font-semibold leading-tight [text-shadow:0_1px_3px_rgba(0,0,0,.4)]">
+                      {item.etiqueta}
+                    </span>
                   )}
                 </div>
 
                 {/* Franja inferior con flecha, solo en la seleccionada */}
-                <div className="tm-barra" style={{ height: sel ? barra : 0 }}>
-                  <svg
-                    width="22"
-                    height="26"
-                    viewBox="0 0 22 26"
-                    aria-hidden="true"
-                  >
+                <div
+                  className={`grid place-items-center overflow-hidden bg-[rgba(40,100,200,.75)] text-white transition-[height] duration-[350ms] ease-ps motion-reduce:transition-none ${
+                    sel ? "shadow-[0_0_0_4px_rgba(255,255,255,.85)]" : ""
+                  }`}
+                  style={{ height: sel ? barra : 0 }}
+                >
+                  <svg width="22" height="26" viewBox="0 0 22 26" aria-hidden="true">
                     <path d="M11 24 2 14h6V2h6v12h6z" fill="currentColor" />
                   </svg>
                 </div>
-
-                {/* Título a la derecha de la seleccionada */}
-                {sel && (
-                  <div
-                    className="tm-titulo"
-                    style={{ left: lado + gap * 6, bottom: barra * 0.25 }}
-                  >
-                    {item.titulo}
-                  </div>
-                )}
               </div>
             );
           })}
         </div>
       </div>
+
+      {actual && (
+        <div
+          key={actual.id}
+          className="pointer-events-none absolute whitespace-nowrap text-[clamp(28px,4vw,54px)] font-light leading-none tracking-[.01em] [text-shadow:0_2px_12px_rgba(0,0,0,.3)]"
+          style={posicionTitulo}
+          aria-hidden="true"
+        >
+          <span className="block animate-titulo-entra motion-reduce:animate-none">
+            {actual.titulo}
+          </span>
+        </div>
+      )}
     </div>
   );
 }
-
-const CSS = `
-.tm-fila {
-  display: flex;
-  align-items: flex-start;
-  transition: transform .45s cubic-bezier(.2,.8,.2,1);
-  will-change: transform;
-}
-.tm-tarjeta {
-  position: relative;
-  cursor: pointer;
-  transition: width .35s cubic-bezier(.2,.8,.2,1);
-}
-.tm-cara {
-  position: relative;
-  display: grid;
-  place-items: center;
-  color: #fff;
-  overflow: hidden;
-  transition: height .35s cubic-bezier(.2,.8,.2,1), filter .3s;
-  box-shadow: 0 6px 18px rgba(0,0,0,.25);
-}
-.tm-tarjeta:not(.tm-sel) .tm-cara { filter: brightness(.88); }
-.tm-tarjeta:not(.tm-sel):hover .tm-cara { filter: brightness(1.05); }
-.tm-sel .tm-cara {
-  background-blend-mode: overlay;
-  box-shadow: 0 0 0 4px rgba(255,255,255,.85), 0 0 28px rgba(140,190,255,.55), 0 10px 30px rgba(0,0,0,.35);
-}
-.tm-sel .tm-cara::after {
-  content: "";
-  position: absolute; inset: 0;
-  background: linear-gradient(135deg, rgba(255,255,255,.22), rgba(255,255,255,0) 55%);
-  pointer-events: none;
-}
-.tm-icono { display: grid; place-items: center; transition: width .35s, height .35s; }
-.tm-icono > svg { width: 100%; height: 100%; }
-.tm-etiqueta {
-  position: absolute; left: 0; right: 0; bottom: 12%;
-  text-align: center;
-  font: 600 13px/1.2 system-ui, sans-serif;
-  color: #fff;
-  text-shadow: 0 1px 3px rgba(0,0,0,.4);
-}
-.tm-barra {
-  display: grid; place-items: center;
-  overflow: hidden;
-  color: #fff;
-  background: rgba(40,100,200,.75);
-  box-shadow: 0 0 0 4px rgba(255,255,255,.85);
-  transition: height .35s cubic-bezier(.2,.8,.2,1);
-}
-.tm-tarjeta:not(.tm-sel) .tm-barra { box-shadow: none; }
-.tm-titulo {
-  position: absolute;
-  white-space: nowrap;
-  color: #fff;
-  font: 300 clamp(28px, 4vw, 54px)/1 system-ui, "Segoe UI", sans-serif;
-  letter-spacing: .01em;
-  text-shadow: 0 2px 12px rgba(0,0,0,.3);
-  animation: tm-entra .4s ease both;
-  pointer-events: none;
-}
-@keyframes tm-entra { from { opacity: 0; transform: translateX(-12px); } }
-.tm-entrada {
-  transform-origin: 20% 40%;
-  animation: tm-crece 1s cubic-bezier(.2,.8,.2,1) .15s both;
-}
-@keyframes tm-crece {
-  from { opacity: 0; transform: scale(.72); }
-  60%  { opacity: 1; }
-  to   { opacity: 1; transform: scale(1); }
-}
-@media (prefers-reduced-motion: reduce) {
-  .tm-fila, .tm-tarjeta, .tm-cara, .tm-barra { transition: none; }
-  .tm-titulo, .tm-entrada { animation: none; }
-}
-`;
