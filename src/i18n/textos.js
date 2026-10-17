@@ -1,8 +1,10 @@
 // Textos fijos de la interfaz en cada idioma.
 // Los textos de las secciones (Sobre mí, Proyectos…) están en src/data/secciones.js.
+import { SEO } from "./seo";
+
 export const TEXTOS = {
   es: {
-    tituloPagina: "Portafolio ToniDev | Desarrollador Frontend React",
+    tituloPagina: SEO.es.titulo,
     bienvenidaTitulo: "Bienvenido a mi portafolio",
     bienvenidaSubtitulo: "Pulsa cualquier tecla o toca la pantalla para empezar.",
     menu: "Menú del portafolio",
@@ -20,7 +22,7 @@ export const TEXTOS = {
     temas: { azul: "Azul", violeta: "Violeta", turquesa: "Turquesa", ambar: "Ámbar" },
   },
   en: {
-    tituloPagina: "ToniDev Portfolio | React Frontend Developer",
+    tituloPagina: SEO.en.titulo,
     bienvenidaTitulo: "Welcome to my portfolio",
     bienvenidaSubtitulo: "Press any key or tap the screen to start.",
     menu: "Portfolio menu",
@@ -38,7 +40,7 @@ export const TEXTOS = {
     temas: { azul: "Blue", violeta: "Violet", turquesa: "Turquoise", ambar: "Amber" },
   },
   it: {
-    tituloPagina: "Portfolio ToniDev | Sviluppatore Frontend React",
+    tituloPagina: SEO.it.titulo,
     bienvenidaTitulo: "Benvenuto nel mio portfolio",
     bienvenidaSubtitulo: "Premi un tasto qualsiasi o tocca lo schermo per iniziare.",
     menu: "Menu del portfolio",

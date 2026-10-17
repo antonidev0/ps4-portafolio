@@ -1,15 +1,14 @@
 import { IDIOMAS } from "../i18n/idiomas";
-import { useIdioma } from "../i18n/useIdioma";
-import { useAppStore } from "../store/useAppStore";
+import { useCambiarIdioma, useIdioma } from "../i18n/useIdioma";
 
 /**
- * Botones ES · EN · IT para cambiar el idioma.
+ * Botones ES · EN · IT para cambiar el idioma (lleva a la misma página en /, /en/ o /it/).
  * Lleva data-sin-atajos para que la bienvenida y el menú no reaccionen
  * a los clics, Enter y Espacio que se hacen sobre él.
  */
 export default function SelectorIdioma({ className = "" }) {
   const { idioma, t } = useIdioma();
-  const setIdioma = useAppStore((s) => s.setIdioma);
+  const cambiarIdioma = useCambiarIdioma();
 
   return (
     <div
@@ -26,7 +25,7 @@ export default function SelectorIdioma({ className = "" }) {
           title={nombre}
           aria-label={nombre}
           aria-pressed={idioma === codigo}
-          onClick={() => setIdioma(codigo)}
+          onClick={() => cambiarIdioma(codigo)}
           className={`rounded-full px-3 py-1 text-xs font-semibold tracking-wider transition-colors focus-visible:outline focus-visible:outline-2 focus-visible:outline-white ${
             idioma === codigo ? "bg-white text-[#020b2e]" : "text-white/70 hover:bg-white/10"
           }`}

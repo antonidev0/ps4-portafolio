@@ -7,7 +7,7 @@ import { useAppStore } from "../store/useAppStore";
 
 export default function MenuPage() {
   const navigate = useNavigate();
-  const { t, tr } = useIdioma();
+  const { t, tr, ruta } = useIdioma();
   const indiceMenu = useAppStore((s) => s.indiceMenu);
   const setIndiceMenu = useAppStore((s) => s.setIndiceMenu);
   const items = secciones.map((s) => ({ ...s, titulo: tr(s.titulo), etiqueta: tr(s.etiqueta) }));
@@ -21,8 +21,8 @@ export default function MenuPage() {
         ariaLabel={t("menu")}
         inicial={indiceMenu}
         onCambio={(_, i) => setIndiceMenu(i)}
-        onAbrir={(item) => navigate(item.ruta ?? `/${item.id}`)}
-        onAtras={() => navigate("/")}
+        onAbrir={(item) => navigate(ruta(item.ruta ?? `/${item.id}`))}
+        onAtras={() => navigate(ruta("/"))}
       />
       <p className="mt-4 hidden px-10 text-sm text-white/50 sm:block">{t("ayudaMenu")}</p>
     </main>

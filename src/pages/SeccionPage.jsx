@@ -3,7 +3,7 @@ import { Link, useNavigate, useParams } from "react-router";
 import { TEMAS } from "../components/Fondo/temas";
 import { buscarSeccion } from "../data/secciones";
 import { IDIOMAS } from "../i18n/idiomas";
-import { useIdioma } from "../i18n/useIdioma";
+import { useCambiarIdioma, useIdioma } from "../i18n/useIdioma";
 import { IconoAtras } from "../icons/iconos";
 import { useAppStore } from "../store/useAppStore";
 import NoEncontradaPage from "./NoEncontradaPage";
@@ -11,7 +11,7 @@ import NoEncontradaPage from "./NoEncontradaPage";
 export default function SeccionPage() {
   const { seccionId } = useParams();
   const navigate = useNavigate();
-  const { t, tr } = useIdioma();
+  const { t, tr, ruta } = useIdioma();
   const seccion = buscarSeccion(seccionId);
 
   // Escape o Retroceso vuelven al menú, como en la consola
@@ -20,11 +20,11 @@ export default function SeccionPage() {
       if (e.key !== "Escape" && e.key !== "Backspace") return;
       if (e.target.closest?.("input, textarea, [contenteditable]")) return;
       e.preventDefault();
-      navigate("/menu");
+      navigate(ruta("/menu"));
     };
     window.addEventListener("keydown", alPulsar);
     return () => window.removeEventListener("keydown", alPulsar);
-  }, [navigate]);
+  }, [navigate, ruta]);
 
   if (!seccion) return <NoEncontradaPage />;
 
@@ -33,7 +33,7 @@ export default function SeccionPage() {
   return (
     <main className="mx-auto flex min-h-dvh max-w-3xl flex-col px-4 py-[8vh] sm:px-8">
       <Link
-        to="/menu"
+        to={ruta("/menu")}
         className="mb-6 inline-flex w-fit items-center gap-2 rounded-full px-3 py-1.5 text-sm text-white/70 transition-colors hover:bg-white/10 hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
       >
         <IconoAtras width={16} height={16} />
@@ -119,7 +119,7 @@ function Ajustes() {
   const { idioma, t } = useIdioma();
   const tema = useAppStore((s) => s.tema);
   const setTema = useAppStore((s) => s.setTema);
-  const setIdioma = useAppStore((s) => s.setIdioma);
+  const cambiarIdioma = useCambiarIdioma();
 
   return (
     <div className="grid gap-8">
@@ -133,7 +133,7 @@ function Ajustes() {
                 name="idioma"
                 value={codigo}
                 checked={idioma === codigo}
-                onChange={() => setIdioma(codigo)}
+                onChange={() => cambiarIdioma(codigo)}
                 className="sr-only"
               />
               {nombre}
