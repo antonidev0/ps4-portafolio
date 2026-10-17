@@ -12,8 +12,6 @@
 //   tipo         "ajustes" para la página de ajustes (no usa items)
 //   ruta         si existe, la tarjeta abre esa ruta en lugar de una página de sección
 //                (se usa para los juegos y apps integrados)
-//
-// Los textos entre [corchetes] son de ejemplo: sustitúyelos por los tuyos.
 
 import {
   IconoAjustes,
@@ -32,10 +30,10 @@ export const secciones = [
     Icono: IconoPersona,
     color: "linear-gradient(160deg, #1d5be0, #06257a)",
     descripcion:
-      "[Preséntate en dos o tres frases: quién eres, a qué te dedicas y qué tipo de proyectos te gustan.]",
+      "Soy Antoni, desarrollador frontend en React y JavaScript. Me encanta crear experiencias interactivas que se sienten vivas, desde juegos en 3D hasta interfaces inspiradas en consolas como este portafolio. Disfruto los proyectos donde el diseño, la animación y el código se juntan para sorprender.",
     items: [
-      { titulo: "Ubicación", texto: "[Tu ciudad o país]" },
-      { titulo: "Intereses", texto: "[Desarrollo web, interfaces, videojuegos…]" },
+      { titulo: "Ubicación", texto: "Italia · Originario de Venezuela" },
+      { titulo: "Intereses", texto: "Desarrollo web, videojuegos y redes sociales" },
     ],
   },
   {
@@ -59,9 +57,10 @@ export const secciones = [
         enlace: { texto: "Ver código", url: "https://github.com/antonidev0/dachshund-3d" },
       },
       {
-        titulo: "[Otro proyecto]",
-        texto: "[Qué hace, qué problema resuelve y qué aprendiste.]",
-        etiquetas: ["[Tecnología]"],
+        titulo: "Flappy Dog",
+        texto: "Mi versión de Flappy Bird protagonizada por un perro, hecha para practicar lógica de juego en el navegador.",
+        etiquetas: ["JavaScript"],
+        enlace: { texto: "Ver código", url: "https://github.com/antonidev0/flappydog" },
       },
     ],
   },
@@ -78,16 +77,22 @@ export const secciones = [
     Icono: IconoCodigo,
     descripcion: "Tecnologías y herramientas con las que trabajo.",
     items: [
-      { titulo: "Frontend", etiquetas: ["JavaScript", "React", "Tailwind CSS", "HTML", "CSS"] },
-      { titulo: "Herramientas", etiquetas: ["Git", "Vite", "pnpm"] },
+      { titulo: "Frontend", etiquetas: ["JavaScript", "React", "Tailwind CSS", "HTML", "CSS", "Three.js"] },
+      { titulo: "Herramientas", etiquetas: ["Git", "GitHub", "Vite", "pnpm", "CI/CD"] },
     ],
   },
   {
     id: "experiencia",
     titulo: "Experiencia",
     Icono: IconoMaletin,
-    descripcion: "[Trabajos, prácticas, formación o proyectos destacados.]",
-    items: [{ titulo: "[Puesto · Empresa]", texto: "[Fechas y una línea sobre lo que hiciste.]" }],
+    descripcion: "Formación y proyectos que me han hecho crecer como desarrollador.",
+    items: [
+      {
+        titulo: "Bootcamp JSCamp",
+        texto: "Formación intensiva en JavaScript y desarrollo web moderno.",
+        enlace: { texto: "Ver repositorio", url: "https://github.com/antonidev0/jscamp-bootcamp" },
+      },
+    ],
   },
   {
     id: "contacto",
@@ -101,7 +106,7 @@ export const secciones = [
       },
       {
         titulo: "Correo",
-        enlace: { texto: "[tu-correo@ejemplo.com]", url: "mailto:tu-correo@ejemplo.com" },
+        enlace: { texto: "antonibogado43@gmail.com", url: "mailto:antonibogado43@gmail.com" },
       },
     ],
   },
