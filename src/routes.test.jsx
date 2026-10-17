@@ -82,6 +82,24 @@ describe("navegación", () => {
     expect(screen.getByRole("link", { name: /Torna al menu/ })).toBeInTheDocument();
   });
 
+  it("enlaza el certificado y la carta de recomendación en el idioma elegido", async () => {
+    abrir("/experiencia");
+    expect(await screen.findByRole("link", { name: "Ver certificado" })).toHaveAttribute(
+      "href",
+      "/documentos/certificado-jscamp.pdf",
+    );
+    expect(screen.getByRole("link", { name: "Carta de recomendación" })).toHaveAttribute(
+      "href",
+      "/documentos/carta-recomendacion-es.pdf",
+    );
+
+    act(() => useAppStore.getState().setIdioma("it"));
+    expect(screen.getByRole("link", { name: "Lettera di referenze" })).toHaveAttribute(
+      "href",
+      "/documentos/carta-recomendacion-en.pdf",
+    );
+  });
+
   it("cambia el tema desde Ajustes", async () => {
     abrir("/ajustes");
     fireEvent.click(await screen.findByLabelText("Violeta"));

@@ -13,6 +13,9 @@
 //   color        fondo de la tarjeta (color o degradado CSS; opcional)
 //   descripcion  párrafo de introducción de la página
 //   items        lista de bloques { titulo, texto?, etiquetas?: [], enlace?: { texto, url } }
+//                (con varios enlaces: enlaces: [{ texto, url }, …]; url también puede
+//                cambiar según el idioma: { es, en, it })
+//                Los PDF y otros documentos van en public/documentos/
 //   tipo         "ajustes" para la página de ajustes (no usa items)
 //   ruta         si existe, la tarjeta abre esa ruta en lugar de una página de sección
 //                (se usa para los juegos y apps integrados)
@@ -124,11 +127,24 @@ export const secciones = [
     items: [
       {
         titulo: "Frontend",
-        etiquetas: ["JavaScript", "React", "Tailwind CSS", "HTML", "CSS", "Three.js"],
+        etiquetas: [
+          "JavaScript",
+          "TypeScript",
+          "React",
+          "React Router",
+          "Tailwind CSS",
+          "HTML",
+          "CSS",
+          "Three.js",
+        ],
+      },
+      {
+        titulo: "Backend",
+        etiquetas: ["Node.js", "Express", "SQL"],
       },
       {
         titulo: { es: "Herramientas", en: "Tools", it: "Strumenti" },
-        etiquetas: ["Git", "GitHub", "Vite", "pnpm", "CI/CD"],
+        etiquetas: ["Git", "GitHub", "Vite", "pnpm", "Vitest", "Docker", "CI/CD"],
       },
     ],
   },
@@ -143,16 +159,43 @@ export const secciones = [
     },
     items: [
       {
-        titulo: "Bootcamp JSCamp",
+        titulo: "JSCamp Bootcamp · Full Stack",
         texto: {
-          es: "Formación intensiva en JavaScript y desarrollo web moderno.",
-          en: "Intensive training in JavaScript and modern web development.",
-          it: "Formazione intensiva in JavaScript e sviluppo web moderno.",
+          es: "Programa de Desarrollo Full Stack (octubre 2025 – julio 2026). Completé los 13 proyectos finales: HTML, CSS, JavaScript, React, React Router, Node.js con Express, testing, TypeScript, SQL, CI/CD, Docker e IA.",
+          en: "Full Stack Development Program (October 2025 – July 2026). I completed all 13 final projects: HTML, CSS, JavaScript, React, React Router, Node.js with Express, testing, TypeScript, SQL, CI/CD, Docker and AI.",
+          it: "Programma di Sviluppo Full Stack (ottobre 2025 – luglio 2026). Ho completato tutti i 13 progetti finali: HTML, CSS, JavaScript, React, React Router, Node.js con Express, testing, TypeScript, SQL, CI/CD, Docker e IA.",
         },
-        enlace: {
-          texto: { es: "Ver repositorio", en: "View repository", it: "Vedi il repository" },
-          url: "https://github.com/antonidev0/jscamp-bootcamp",
-        },
+        enlaces: [
+          {
+            texto: { es: "Ver certificado", en: "View certificate", it: "Vedi il certificato" },
+            url: "/documentos/certificado-jscamp.pdf",
+          },
+          {
+            texto: {
+              es: "Carta de recomendación",
+              en: "Recommendation letter",
+              it: "Lettera di referenze",
+            },
+            // La carta existe en español e inglés; en italiano se abre la inglesa
+            url: {
+              es: "/documentos/carta-recomendacion-es.pdf",
+              en: "/documentos/carta-recomendacion-en.pdf",
+              it: "/documentos/carta-recomendacion-en.pdf",
+            },
+          },
+          {
+            texto: {
+              es: "Verificar en JSCamp",
+              en: "Verify on JSCamp",
+              it: "Verifica su JSCamp",
+            },
+            url: "https://certificados.jscamp.dev/040ba557-7f20-4dc8-8f4c-3d84c6bc181c.pdf",
+          },
+          {
+            texto: { es: "Ver repositorio", en: "View repository", it: "Vedi il repository" },
+            url: "https://github.com/antonidev0/jscamp-bootcamp",
+          },
+        ],
       },
     ],
   },

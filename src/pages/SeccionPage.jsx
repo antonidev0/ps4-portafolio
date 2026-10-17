@@ -76,16 +76,7 @@ function Bloques({ items }) {
               ))}
             </ul>
           )}
-          {item.enlace && (
-            <a
-              href={item.enlace.url}
-              target={item.enlace.url.startsWith("http") ? "_blank" : undefined}
-              rel="noreferrer"
-              className="mt-3 inline-block text-sky-300 underline-offset-4 hover:underline"
-            >
-              {tr(item.enlace.texto)}
-            </a>
-          )}
+          <Enlaces enlaces={item.enlaces ?? (item.enlace ? [item.enlace] : [])} />
         </li>
       ))}
     </ul>
@@ -96,6 +87,33 @@ const claseOpcion = (activa) =>
   `flex cursor-pointer items-center gap-3 rounded-xl border px-4 py-3 transition-colors has-[:focus-visible]:outline has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-white ${
     activa ? "border-white bg-white/15" : "border-white/15 hover:bg-white/10"
   }`;
+
+// Los enlaces externos y los documentos se abren en una pestaña nueva
+const abreFuera = (url) => url.startsWith("http") || url.endsWith(".pdf");
+
+function Enlaces({ enlaces }) {
+  const { tr } = useIdioma();
+  if (enlaces.length === 0) return null;
+
+  return (
+    <div className="mt-3 flex flex-wrap gap-x-5 gap-y-2">
+      {enlaces.map((enlace) => {
+        const url = tr(enlace.url);
+        return (
+          <a
+            key={url}
+            href={url}
+            target={abreFuera(url) ? "_blank" : undefined}
+            rel="noreferrer"
+            className="text-sky-300 underline-offset-4 hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-white"
+          >
+            {tr(enlace.texto)}
+          </a>
+        );
+      })}
+    </div>
+  );
+}
 
 function Ajustes() {
   const { idioma, t } = useIdioma();
